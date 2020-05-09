@@ -8,7 +8,8 @@
     <link rel="icon" href="img/favicon.ico">
 
     <title>Like page</title>
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css"
+          integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
     <!-- Bootstrap core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
 
@@ -17,27 +18,37 @@
 </head>
 <body style="background-color: #f5f5f5;">
 
-<div class="col-4 offset-4">
-    <div class="card">
-        <div class="card-body">
-            <div class="row">
-                <div class="col-12 col-lg-12 col-md-12 text-center">
-                    <img src="https://robohash.org/68.186.255.198.png" alt="" class="mx-auto rounded-circle img-fluid">
-                    <h3 class="mb-0 text-truncated">User name</h3>
-                    <br>
+<form method="post">
+    <div class="col-4 offset-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12 col-lg-12 col-md-12 text-center">
+                        <img src="${user.profilePic}" alt="" class="mx-auto rounded-circle img-fluid">
+                        <h3 class="mb-0 text-truncated">${user.username}</h3>
+                        <br>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <button type="submit" name="button" value="dislike" href="/users"
+                                class="btn btn-outline-danger btn-block"><span class="fa fa-times"></span> Dislike
+                        </button>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <button type="submit" name="button" value="like" href="/users" class="btn btn-outline-success btn-block"><span
+                                    class="fa fa-heart"></span> Like
+                        </button>
+                    </div>
+                    <!--/col-->
                 </div>
-                <div class="col-12 col-lg-6">
-                    <button type="button" class="btn btn-outline-danger btn-block"><span class="fa fa-times"></span> Dislike</button>
-                </div>
-                <div class="col-12 col-lg-6">
-                    <button class="btn btn-outline-success btn-block"><span class="fa fa-heart"></span> Like</button>
-                </div>
-                <!--/col-->
+                <!--/row-->
             </div>
-            <!--/row-->
+            <!--/card-block-->
         </div>
-        <!--/card-block-->
-    </div>
+</form>
+
+<a href="/logout" class="btn-lg btn-danger col-12" style="display: block; margin: 10px auto; text-align: center">Log
+    out</a>
+
 </div>
 
 </body>

@@ -103,6 +103,8 @@
             </div>
         </div>
     </div>
+    <a href="/logout" class="btn-lg btn-danger col-3" style="display: block; margin: 0 auto; text-align: center">Log out</a>
+
 </div>
 
 </body>

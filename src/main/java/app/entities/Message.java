@@ -6,6 +6,13 @@ public class Message {
   private int to;
   private String body;
 
+  public Message(int id, int from, int to, String body) {
+    this.id = id;
+    this.from = from;
+    this.to = to;
+    this.body = body;
+  }
+
   public int getId() {
     return id;
   }
