@@ -1,16 +1,16 @@
-package app;
+package app.servlets;
 
-import javax.servlet.ServletException;
+import app.tools.TemplateEngine;
+
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.HashMap;
 
-public class LoginServlet extends HttpServlet {
+public class UserServlet extends HttpServlet {
   private final TemplateEngine engine;
 
-  public LoginServlet(TemplateEngine engine) {
+  public UserServlet(TemplateEngine engine) {
     this.engine = engine;
   }
 
@@ -18,7 +18,7 @@ public class LoginServlet extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
     HashMap<String, Object> data = new HashMap<>();
-    engine.render("login.ftl", data, resp);
+    engine.render("like-page.ftl", data, resp);
   }
 
   @Override

@@ -1,4 +1,4 @@
-package app;
+package app.tools;
 
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
@@ -25,8 +25,8 @@ public class TemplateEngine {
     }};
   }
 
-  public static app.TemplateEngine folder(String path) throws IOException {
-    return new app.TemplateEngine(path);
+  public static TemplateEngine folder(String path) throws IOException {
+    return new TemplateEngine(path);
   }
 
   public void render(String template, HashMap<String, Object> data, HttpServletResponse res) {

@@ -1,4 +1,4 @@
-package app;
+package app.servlets;
 
 import org.eclipse.jetty.servlet.Source;
 
