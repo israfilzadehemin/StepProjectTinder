@@ -51,39 +51,51 @@ public class ConnectionTool {
       userDao.getById(from).getMessages().add(new Message(id, from, to, body));
     }
 
+    conn.close();
     return users;
   }
 
-  public Optional<User> getUnivisited(User user) throws SQLException {
+  public List<User> getLikedPeople(User user) throws SQLException {
     Connection conn = DriverManager.getConnection(URL, USER, PASS);
     List<User> allUsers = new ArrayList<>(getUsers());
-    List<Integer> likedIds = new ArrayList<>();
+    List<User> likedPeople = new ArrayList<>();
 
-    String sqlLike = "select l.id, l.\"fromUser\", l.\"toUser\" " +
-            "from users s inner join likes l on (s.id=l.\"fromUser\")";
+    String sqlLike = "select * from likes where \"fromUser\"=?";
 
     PreparedStatement stmtLike = conn.prepareStatement(sqlLike);
+    stmtLike.setInt(1, user.getId());
     ResultSet rsetLike = stmtLike.executeQuery();
 
     while (rsetLike.next()) {
-      int id = rsetLike.getInt("id");
-      int from = rsetLike.getInt("fromUser");
       int to = rsetLike.getInt("toUser");
-
-      likedIds.add(to);
+      allUsers.stream().filter(user1 -> user1.getId() == to).forEach(likedPeople::add);
     }
+    conn.close();
+    return likedPeople;
 
+  }
+
+  public Optional<User> getUnivisited(User user) throws SQLException {
+
+    List<User> allUsers = new ArrayList<>(getUsers());
+    List<User> likedUsers = getLikedPeople(user);
     List<User> visited = new ArrayList<>();
 
-    allUsers.forEach(user1 ->
-            likedIds.stream().
-                    filter(id -> user1.getId() == id || user1.getId() == user.getId())
-                    .map(id -> user1)
-                    .forEach(visited::add));
+    if (likedUsers.size() > 0) {
+      allUsers.forEach(user1 ->
+              likedUsers.stream().
+                      filter(liked -> user1.getId() == liked.getId() || user1.getId() == user.getId())
+                      .map(id -> user1)
+                      .forEach(visited::add));
+
+    }
+    else {
+      allUsers.stream().filter(user1 -> user.getId()==user1.getId())
+                      .forEach(visited::add);
+    }
 
     allUsers.removeAll(visited);
     List<User> unvisited = new ArrayList<>(allUsers);
-
 
     if (unvisited.size() > 0) {
       int r = new Random().nextInt(unvisited.size());
@@ -118,7 +130,7 @@ public class ConnectionTool {
     stmtUser.setInt(1, fromUser);
     stmtUser.setInt(2, toUser);
     stmtUser.execute();
-
+    conn.close();
   }
 
 }

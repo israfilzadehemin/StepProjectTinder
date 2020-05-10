@@ -1,6 +1,7 @@
 package app.servlets;
 
 import app.dao.UserDao;
+import app.entities.User;
 import app.tools.ConnectionTool;
 import app.tools.TemplateEngine;
 
@@ -15,6 +16,7 @@ import java.util.HashMap;
 
 public class LogoutServlet extends HttpServlet {
 
+  ConnectionTool ct = new ConnectionTool();
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     Cookie[] cookies = req.getCookies();
