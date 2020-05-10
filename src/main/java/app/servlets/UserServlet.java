@@ -31,13 +31,11 @@ public class UserServlet extends HttpServlet {
     HashMap<String, Object> data = new HashMap<>();
 
     try {
-      userDao.getAllUsers().addAll(connTool.getUsers());
-
       User currentUser = connTool.getUserFromCookie(req);
-      Optional<User> showingUser = connTool.getUnivisited(currentUser);
+      Optional<User> showingUser = connTool.getUnliked(currentUser);
+
       if (showingUser.equals(Optional.empty())) resp.sendRedirect("/liked");
       else {
-
         Cookie cookies = new Cookie("liked", String.format("%s", showingUser.get().getMail()));
         cookies.setMaxAge(60);
         resp.addCookie(cookies);
@@ -57,9 +55,7 @@ public class UserServlet extends HttpServlet {
     HashMap<String, Object> data = new HashMap<>();
     String btn = req.getParameter("button");
 
-
     try {
-      //  userDao.getAllUsers().addAll(connTool.getUsers());
       User currentUser = connTool.getUserFromCookie(req);
 
       Cookie[] cookies = req.getCookies();
@@ -76,16 +72,16 @@ public class UserServlet extends HttpServlet {
                 .filter(u -> u.getMail().equals(liked))
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
-        if (btn.equals("like")) connTool.addLike(currentUser, likedUser);
 
-        Optional<User> showingUser = connTool.getUnivisited(currentUser);
+        if (btn.equals("like")) connTool.addLike(currentUser, likedUser);
+        Optional<User> showingUser = connTool.getUnliked(currentUser);
+
         if (showingUser.equals(Optional.empty())) resp.sendRedirect("/liked");
         else {
           Arrays.stream(cookies).forEach(c -> c.setMaxAge(0));
           Cookie newCookie = new Cookie("liked", String.format("%s", showingUser.get().getMail()));
           newCookie.setMaxAge(60);
           resp.addCookie(newCookie);
-
 
           data.put("user", showingUser.get());
           engine.render("like-page.ftl", data, resp);
@@ -95,7 +91,6 @@ public class UserServlet extends HttpServlet {
     } catch (SQLException | IOException sqlException) {
       sqlException.printStackTrace();
     }
-
 
   }
 

@@ -9,7 +9,7 @@ public class User {
   private String mail;
   private String password;
   private String profilePic;
-  private List<Integer> likesId = new ArrayList<>();
+  private List<Integer> likesId = new ArrayList<>();//can be deleted
   private List<Message> messages = new ArrayList<>();
 
   public User(int id, String username, String mail, String password, String profilePic) {
@@ -44,36 +44,8 @@ public class User {
     return messages;
   }
 
-  public void setId(int id) {
-    this.id = id;
-  }
-
-  public void setUsername(String username) {
-    this.username = username;
-  }
-
-  public void setMail(String mail) {
-    this.mail = mail;
-  }
-
-  public void setPassword(String password) {
-    this.password = password;
-  }
-
-  public void setLikesId(List<Integer> likesId) {
-    this.likesId = likesId;
-  }
-
-  public void setMessages(List<Message> messages) {
-    this.messages = messages;
-  }
-
   public String getProfilePic() {
     return profilePic;
-  }
-
-  public void setProfilePic(String profilePic) {
-    this.profilePic = profilePic;
   }
 
   @Override

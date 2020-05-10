@@ -21,7 +21,6 @@ public class CookieFilter implements Filter {
     return (int) Arrays.stream(cookies).filter(c -> c.getName().equals("login")).count() != 0;
   }
 
-
   @Override
   public void init(FilterConfig filterConfig) {
 

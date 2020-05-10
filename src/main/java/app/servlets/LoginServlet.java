@@ -30,8 +30,8 @@ public class LoginServlet extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     HashMap<String, Object> data = new HashMap<>();
+    data.put("error", "noerror");
     CookieFilter cookieFilter = new CookieFilter();
-
     if (!cookieFilter.isLogged(req, resp))
     engine.render("login.ftl", data, resp);
     else resp.sendRedirect("/users");
@@ -39,20 +39,26 @@ public class LoginServlet extends HttpServlet {
 
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    String mail = req.getParameter("mail");
+    String password = req.getParameter("password");
+
     try {
       userDao.getAllUsers().addAll(connTool.getUsers());
     } catch (SQLException sqlException) {
       sqlException.printStackTrace();
     }
 
-    String mail = req.getParameter("mail");
-    String password = req.getParameter("password");
-
     if (userDao.checkUser(mail, password)) {
       Cookie loginCookie = new Cookie("login", String.format("%s", mail));
       loginCookie.setMaxAge(60 * 60 * 24);
       resp.addCookie(loginCookie);
       resp.sendRedirect("/users");
+    }
+
+    else {
+      HashMap<String, Object> data = new HashMap<>();
+      data.put("error", "wrongUser");
+      engine.render("login.ftl", data, resp);
     }
 
   }

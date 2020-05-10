@@ -16,7 +16,6 @@ import java.util.HashMap;
 
 public class LogoutServlet extends HttpServlet {
 
-  ConnectionTool ct = new ConnectionTool();
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     Cookie[] cookies = req.getCookies();
@@ -27,7 +26,5 @@ public class LogoutServlet extends HttpServlet {
     resp.sendRedirect("/login");
 
   }
-
-
 
 }

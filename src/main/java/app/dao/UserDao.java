@@ -13,7 +13,7 @@ public class UserDao {
   }
 
   public User getById(int id) {
-    return users.get(id+1);
+    return users.get(id-1);
   }
 
   public void addUser(User user) {

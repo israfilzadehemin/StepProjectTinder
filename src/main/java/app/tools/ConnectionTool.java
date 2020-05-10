@@ -20,13 +20,12 @@ public class ConnectionTool {
   UserDao userDao = new UserDao();
 
   public List<User> getUsers() throws SQLException {
+    List<User> users = new ArrayList<>();
 
     Connection conn = DriverManager.getConnection(URL, USER, PASS);
     String sqlUser = "select * from users order by id asc";
     PreparedStatement stmtUser = conn.prepareStatement(sqlUser);
     ResultSet rsetUser = stmtUser.executeQuery();
-
-    List<User> users = new ArrayList<>();
 
     while (rsetUser.next()) {
       int id = rsetUser.getInt("id");
@@ -36,19 +35,6 @@ public class ConnectionTool {
       String profilePic = rsetUser.getString("profile_pic");
 
       users.add(new User(id, username, mail, password, profilePic));
-    }
-
-    String sqlMessage = "select * from users s inner join messages m on (s.id=m.\"fromUser\")";
-    PreparedStatement stmtMessage = conn.prepareStatement(sqlMessage);
-    ResultSet rsetMessage = stmtMessage.executeQuery();
-
-    while (rsetMessage.next()) {
-      int id = rsetMessage.getInt("id");
-      int from = rsetMessage.getInt("fromUser");
-      int to = rsetMessage.getInt("toUser");
-      String body = rsetMessage.getString("body");
-
-      userDao.getById(from).getMessages().add(new Message(id, from, to, body));
     }
 
     conn.close();
@@ -75,8 +61,29 @@ public class ConnectionTool {
 
   }
 
-  public Optional<User> getUnivisited(User user) throws SQLException {
+  public List<Message> getMessages(User fromWhom, User toWhom) throws SQLException {
+    List<Message> messages = new ArrayList<>();
 
+    Connection conn = DriverManager.getConnection(URL, USER, PASS);
+
+    String sqlMessage = "select * from messages where \"fromUser\" = ? and \"toUser\" = ?";
+    PreparedStatement stmtMessage = conn.prepareStatement(sqlMessage);
+    stmtMessage.setInt(1, fromWhom.getId());
+    stmtMessage.setInt(2, toWhom.getId());
+
+    ResultSet rsetMessage = stmtMessage.executeQuery();
+
+    while (rsetMessage.next()) {
+      int id = rsetMessage.getInt("id");
+      int from = rsetMessage.getInt("fromUser");
+      int to = rsetMessage.getInt("toUser");
+      String body = rsetMessage.getString("body");
+      messages.add(new Message(id, from, to, body));
+    }
+    return messages;
+  }
+
+  public Optional<User> getUnliked(User user) throws SQLException {
     List<User> allUsers = new ArrayList<>(getUsers());
     List<User> likedUsers = getLikedPeople(user);
     List<User> visited = new ArrayList<>();
@@ -88,10 +95,10 @@ public class ConnectionTool {
                       .map(id -> user1)
                       .forEach(visited::add));
 
-    }
-    else {
-      allUsers.stream().filter(user1 -> user.getId()==user1.getId())
-                      .forEach(visited::add);
+    } else {
+      allUsers.stream()
+              .filter(user1 -> user.getId() == user1.getId())
+              .forEach(visited::add);
     }
 
     allUsers.removeAll(visited);
@@ -104,7 +111,7 @@ public class ConnectionTool {
   }
 
   public User getUserFromCookie(HttpServletRequest request) throws SQLException {
-    userDao.getAllUsers().addAll(getUsers());
+    //userDao.getAllUsers().addAll(getUsers());
     Cookie[] cookies = request.getCookies();
 
     String mail = Arrays.stream(cookies)
@@ -113,7 +120,7 @@ public class ConnectionTool {
             .findFirst()
             .orElseThrow(RuntimeException::new);
 
-    return userDao.getAllUsers().stream()
+    return getUsers().stream()
             .filter(u -> u.getMail().equals(mail))
             .findFirst()
             .orElseThrow(RuntimeException::new);
@@ -121,15 +128,25 @@ public class ConnectionTool {
 
   public void addLike(User fromWhom, User toWhom) throws SQLException {
     Connection conn = DriverManager.getConnection(URL, USER, PASS);
+      String sqlUser = "insert into likes (\"fromUser\", \"toUser\") VALUES (?, ?)";
+      PreparedStatement stmtUser = conn.prepareStatement(sqlUser);
+      stmtUser.setInt(1, fromWhom.getId());
+      stmtUser.setInt(2, toWhom.getId());
 
-    int fromUser = fromWhom.getId();
-    int toUser = toWhom.getId();
+      stmtUser.execute();
+    conn.close();
+  }
 
-    String sqlUser = "insert into likes (\"fromUser\", \"toUser\") VALUES (?, ?)";
-    PreparedStatement stmtUser = conn.prepareStatement(sqlUser);
-    stmtUser.setInt(1, fromUser);
-    stmtUser.setInt(2, toUser);
-    stmtUser.execute();
+  public void addMessage(User sender, User receiver, String body) throws SQLException {
+    Connection conn = DriverManager.getConnection(URL, USER, PASS);
+    String sqlMessage = "insert into messages (\"fromUser\", \"toUser\", body) values (?,?,?)";
+    PreparedStatement stmtMessage = conn.prepareStatement(sqlMessage);
+
+    stmtMessage.setInt(1, sender.getId());
+    stmtMessage.setInt(2, receiver.getId());
+    stmtMessage.setString(3, body);
+    stmtMessage.execute();
+
     conn.close();
   }
 
