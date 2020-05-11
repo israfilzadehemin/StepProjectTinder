@@ -23,8 +23,6 @@ public class UserServlet extends HttpServlet {
   }
 
   ConnectionTool connTool = new ConnectionTool();
-  UserDao userDao = new UserDao();
-
 
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
@@ -39,6 +37,7 @@ public class UserServlet extends HttpServlet {
         Cookie cookies = new Cookie("liked", String.format("%s", showingUser.get().getMail()));
         cookies.setMaxAge(60);
         resp.addCookie(cookies);
+        connTool.addOnline(currentUser);
 
         data.put("user", showingUser.get());
         engine.render("like-page.ftl", data, resp);

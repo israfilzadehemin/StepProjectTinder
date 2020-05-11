@@ -28,7 +28,8 @@ public class LikedServlet extends HttpServlet {
 
     try {
       User currentUser = connTool.getUserFromCookie(req);
-      data.put("liked", connTool.getLikedPeople(currentUser));
+      connTool.addOnline(currentUser);
+      data.put("liked", connTool.getLikedUsers(currentUser));
 
     } catch (SQLException sqlException) {
       sqlException.printStackTrace();
@@ -37,13 +38,17 @@ public class LikedServlet extends HttpServlet {
   }
 
   @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-    HashMap<String, Object> data = new HashMap<>();
-
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     String btn = req.getParameter("msg");
     Cookie msgId = new Cookie("message", String.format("%s",btn));
     msgId.setMaxAge(60*60);
     resp.addCookie(msgId);
+
+    try {
+      connTool.addOnline(connTool.getUserFromCookie(req));
+    } catch (SQLException sqlException) {
+      sqlException.printStackTrace();
+    }
 
     resp.sendRedirect("/messages");
   }

@@ -1,23 +1,22 @@
 package app.tools;
 
-import app.dao.UserDao;
 import app.entities.Message;
 import app.entities.User;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import java.awt.*;
+import javax.servlet.http.HttpServletResponse;
 import java.sql.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ConnectionTool {
   private final static String URL = "jdbc:postgresql://localhost:5432/Tinder";
   private final static String USER = "postgres";
   private final static String PASS = "xiaominote9";
 
-  UserDao userDao = new UserDao();
 
   public List<User> getUsers() throws SQLException {
     List<User> users = new ArrayList<>();
@@ -33,16 +32,19 @@ public class ConnectionTool {
       String mail = rsetUser.getString("mail");
       String password = rsetUser.getString("password");
       String profilePic = rsetUser.getString("profile_pic");
+      String lastLogin = rsetUser.getString("lastlogin");
+      String fullName = rsetUser.getString("fullname");
 
-      users.add(new User(id, username, mail, password, profilePic));
+      users.add(new User(id, username, fullName, mail, password, profilePic, lastLogin));
     }
 
     conn.close();
     return users;
   }
 
-  public List<User> getLikedPeople(User user) throws SQLException {
+  public List<User> getLikedUsers(User user) throws SQLException {
     Connection conn = DriverManager.getConnection(URL, USER, PASS);
+
     List<User> allUsers = new ArrayList<>(getUsers());
     List<User> likedPeople = new ArrayList<>();
 
@@ -85,33 +87,32 @@ public class ConnectionTool {
 
   public Optional<User> getUnliked(User user) throws SQLException {
     List<User> allUsers = new ArrayList<>(getUsers());
-    List<User> likedUsers = getLikedPeople(user);
-    List<User> visited = new ArrayList<>();
+    List<User> likedUsers = getLikedUsers(user);
+    List<User> liked = new ArrayList<>();
 
     if (likedUsers.size() > 0) {
       allUsers.forEach(user1 ->
               likedUsers.stream().
-                      filter(liked -> user1.getId() == liked.getId() || user1.getId() == user.getId())
+                      filter(l -> user1.getId() == l.getId() || user1.getId() == user.getId())
                       .map(id -> user1)
-                      .forEach(visited::add));
+                      .forEach(liked::add));
 
     } else {
       allUsers.stream()
               .filter(user1 -> user.getId() == user1.getId())
-              .forEach(visited::add);
+              .forEach(liked::add);
     }
 
-    allUsers.removeAll(visited);
-    List<User> unvisited = new ArrayList<>(allUsers);
+    allUsers.removeAll(liked);
+    List<User> unliked = new ArrayList<>(allUsers);
 
-    if (unvisited.size() > 0) {
-      int r = new Random().nextInt(unvisited.size());
-      return Optional.of(unvisited.get(r));
+    if (unliked.size() > 0) {
+      int r = new Random().nextInt(unliked.size());
+      return Optional.of(unliked.get(r));
     } else return Optional.empty();
   }
 
   public User getUserFromCookie(HttpServletRequest request) throws SQLException {
-    //userDao.getAllUsers().addAll(getUsers());
     Cookie[] cookies = request.getCookies();
 
     String mail = Arrays.stream(cookies)
@@ -128,12 +129,13 @@ public class ConnectionTool {
 
   public void addLike(User fromWhom, User toWhom) throws SQLException {
     Connection conn = DriverManager.getConnection(URL, USER, PASS);
-      String sqlUser = "insert into likes (\"fromUser\", \"toUser\") VALUES (?, ?)";
-      PreparedStatement stmtUser = conn.prepareStatement(sqlUser);
-      stmtUser.setInt(1, fromWhom.getId());
-      stmtUser.setInt(2, toWhom.getId());
 
-      stmtUser.execute();
+    String sqlUser = "insert into likes (\"fromUser\", \"toUser\") VALUES (?, ?)";
+    PreparedStatement stmtUser = conn.prepareStatement(sqlUser);
+    stmtUser.setInt(1, fromWhom.getId());
+    stmtUser.setInt(2, toWhom.getId());
+
+    stmtUser.execute();
     conn.close();
   }
 
@@ -150,4 +152,47 @@ public class ConnectionTool {
     conn.close();
   }
 
+  public void addLastLogin(User user) throws SQLException {
+    Connection conn = DriverManager.getConnection(URL, USER, PASS);
+
+    LocalDateTime now = LocalDateTime.now();
+    DateTimeFormatter format = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+    String formatDateTime = now.format(format);
+
+    String sqlUser = "update users set lastlogin = ? where id=?";
+    PreparedStatement stmtUser = conn.prepareStatement(sqlUser);
+    stmtUser.setString(1, formatDateTime);
+    stmtUser.setInt(2, user.getId());
+
+    stmtUser.execute();
+
+    conn.close();
+  }
+
+  public void addOnline(User user) throws SQLException {
+    Connection conn = DriverManager.getConnection(URL, USER, PASS);
+
+    String sqlUser = "update users set lastlogin = ? where id=?";
+    PreparedStatement stmtUser = conn.prepareStatement(sqlUser);
+    stmtUser.setString(1, "Online");
+    stmtUser.setInt(2, user.getId());
+    stmtUser.execute();
+
+    conn.close();
+  }
+
+  public void addUser(String username, String fullname, String mail, String password, String profilePic) throws SQLException {
+    Connection conn = DriverManager.getConnection(URL, USER, PASS);
+    String sqlMessage = "insert into users (username, mail, password, profile_pic, fullname)\n" +
+            "values (?, ?, ?, ?, ?)\n";
+    PreparedStatement stmtMessage = conn.prepareStatement(sqlMessage);
+
+    stmtMessage.setString(1, username);
+    stmtMessage.setString(2, mail);
+    stmtMessage.setString(3, password);
+    stmtMessage.setString(4, profilePic);
+    stmtMessage.setString(5, fullname);
+    stmtMessage.execute();
+
+  }
 }

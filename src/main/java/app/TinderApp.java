@@ -8,6 +8,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 import javax.servlet.DispatcherType;
+import javax.servlet.MultipartConfigElement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -24,6 +25,8 @@ public class TinderApp {
 
     //Servlets
     handler.addServlet(new ServletHolder(new LoginServlet(engine)), "/login/*");
+    handler.addServlet(RegistrationServlet.class, "/registration/*")
+            .getRegistration().setMultipartConfig(new MultipartConfigElement("./img"));
     handler.addServlet(new ServletHolder(new LogoutServlet()), "/logout/*");
     handler.addServlet(new ServletHolder(new UserServlet(engine)), "/users/*");
     handler.addServlet(new ServletHolder(new LikedServlet(engine)), "/liked/*");

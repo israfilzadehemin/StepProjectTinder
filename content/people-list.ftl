@@ -45,11 +45,11 @@
                                             <button type="submit" name="msg" class="btn-primary btn"
                                                     value="${user.id}"> ${user.username} </button>
                                         </td>
-                                        <td class="align-middle">
-                                            ${user.mail}
+                                        <td class="align-middle font-weight-normal" style="font-size: 19px">
+                                            ${user.fullName}
                                         </td>
-                                        <td class="align-middle">
-                                            Last Login: 6/10/2017<br><small class="text-muted">5 days ago</small>
+                                        <td class="align-middle font-weight-light font-italic">
+                                            ${user.lastLogin}
                                         </td>
                                     </tr>
                                 </#list>
