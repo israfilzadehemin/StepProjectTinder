@@ -18,19 +18,21 @@ public class LogoutServlet extends HttpServlet {
 
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-    ConnectionTool connTool = new ConnectionTool();
     try {
-      connTool.addLastLogin(connTool.getUserFromCookie(req));
-    } catch (SQLException sqlException) {
-      sqlException.printStackTrace();
-    }
-    Cookie[] cookies = req.getCookies();
-    Arrays.stream(cookies).forEach(c -> {
-      c.setMaxAge(0);
-      resp.addCookie(c);
-    });
-    resp.sendRedirect("/login");
+      UserDao userDao = new UserDao();
+      userDao.addLastLogin(userDao.getUserFromCookie(req));
 
+      Cookie[] cookies = req.getCookies();
+      Arrays.stream(cookies)
+              .forEach(c -> {
+                c.setMaxAge(0);
+                resp.addCookie(c);
+              });
+
+      resp.sendRedirect("/login");
+    } catch (SQLException sqlException) {
+      throw new RuntimeException("Unexpected error happened :(");
+    }
   }
 
 }

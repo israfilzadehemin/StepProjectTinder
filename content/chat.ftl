@@ -29,7 +29,8 @@
                     </div>
                     <div class="col-md-6 options text-right pr-0 float-left">
                         <form method="post">
-                            <button class="btn btn-dark btn-sm" type="submit" name="exit" value="exit"><i class="fa fa-times hover text-center pt-1"></i></button>
+                            <button class="btn btn-dark btn-sm" type="submit" name="exit" value="exit"><i
+                                        class="fa fa-times hover text-center pt-1"></i></button>
                         </form>
 
                     </div>
@@ -46,7 +47,7 @@
                 </div>
             </div>
             <div class="chat-content">
-                <div class="col-md-12 chats pt-3 pl-2 pr-3 pb-3">
+                <div class="col-md-12 chats pt-3 pl-2 pr-3 pb-3" style="max-height: 500px; overflow: auto">
                     <ul class="p-0">
                         <#list messages as message>
                             <#if message.from == current.id>
@@ -64,7 +65,7 @@
                                         <p class="bg-white m-0 pt-1 pb-1 pl-2 pr-2 rounded">
                                             ${message.body}
                                         </p>
-                                        <span class="receive-msg-time">${other.username}, Jan 25, 6:20 PM</span>
+                                        <span class="receive-msg-time">${other.username}, ${message.time}</span>
                                     </div>
                                 </li>
                             </#if>
@@ -72,18 +73,33 @@
                     </ul>
                 </div>
                 <form method="post">
-                    <div class="col-10 p-2 msg-box border border-success float-left">
-                        <input type="text" name="text" class="border-0 col-12" placeholder=" Send message"/>
+                    <div class="col-12 p-2 msg-box border border-success float-left">
+                        <input type="text" name="text" id="text" class="col-10 form-control d-inline-block"
+                               placeholder=" Send message"/>
+                        <button class="btn btn-success btn-sm border border-success col-2 float-right"
+                                type="submit" disabled id="send" name="submit" style="min-height: 35px;">Send
+                        </button>
+
                     </div>
-                    <button class="btn btn-success border border-success col-2 float-left" style="margin-top: 35px;"
-                            type="submit" name="submit">Send
-                    </button>
                 </form>
 
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    let text = document.querySelector("#text")
+    let send = document.querySelector("#send")
+
+    text.addEventListener("keyup", function () {
+        if (text.value !== null) {
+            send.disabled = false
+        }
+    })
+
+
+</script>
 
 </body>
 </html>

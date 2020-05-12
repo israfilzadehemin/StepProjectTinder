@@ -36,6 +36,7 @@ public class TemplateEngine {
     //  res.getOutputStream().close();
       config.getTemplate(template).process(data, pw);
     } catch (TemplateException | IOException e) {
+      System.out.println(e.getMessage());
       throw new RuntimeException("Freemarker error: ", e);
     }
   }

@@ -19,11 +19,10 @@ import java.util.List;
 public class LoginServlet extends HttpServlet {
   private final TemplateEngine engine;
 
-  public LoginServlet(TemplateEngine engine) {
+  public LoginServlet(TemplateEngine engine) throws SQLException {
     this.engine = engine;
   }
 
-  ConnectionTool connTool = new ConnectionTool();
   UserDao userDao = new UserDao();
 
   @Override
@@ -42,22 +41,16 @@ public class LoginServlet extends HttpServlet {
     String mail = req.getParameter("mail");
     String password = req.getParameter("password");
 
-    try {
-      userDao.getAllUsers().addAll(connTool.getUsers());
-      if (userDao.checkUser(mail, password)) {
-        Cookie loginCookie = new Cookie("login", String.format("%s", mail));
-        loginCookie.setMaxAge(60 * 60 * 24);
-        resp.addCookie(loginCookie);
-        resp.sendRedirect("/users");
-      } else {
-        HashMap<String, Object> data = new HashMap<>();
-        data.put("error", "wrongUser");
-        engine.render("login.ftl", data, resp);
-      }
-    } catch (SQLException sqlException) {
-      sqlException.printStackTrace();
+    if (userDao.checkUser(mail, password)) {
+      Cookie loginCookie = new Cookie("login", String.format("%s", mail));
+      loginCookie.setMaxAge(60 * 60 * 24);
+      resp.addCookie(loginCookie);
+      resp.sendRedirect("/users");
+    } else {
+      HashMap<String, Object> data = new HashMap<>();
+      data.put("error", "wrongUser");
+      engine.render("login.ftl", data, resp);
     }
-
-
   }
+
 }

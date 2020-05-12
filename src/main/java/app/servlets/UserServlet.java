@@ -18,45 +18,42 @@ import java.util.Optional;
 public class UserServlet extends HttpServlet {
   private final TemplateEngine engine;
 
-  public UserServlet(TemplateEngine engine) {
+  public UserServlet(TemplateEngine engine) throws SQLException {
     this.engine = engine;
   }
 
-  ConnectionTool connTool = new ConnectionTool();
+  UserDao userDao = new UserDao();
 
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-    HashMap<String, Object> data = new HashMap<>();
-
     try {
-      User currentUser = connTool.getUserFromCookie(req);
-      Optional<User> showingUser = connTool.getUnliked(currentUser);
+      HashMap<String, Object> data = new HashMap<>();
+      User currentUser = userDao.getUserFromCookie(req);
+      Optional<User> showingUser = userDao.getRandomUnlikedUser(currentUser);
 
       if (showingUser.equals(Optional.empty())) resp.sendRedirect("/liked");
       else {
         Cookie cookies = new Cookie("liked", String.format("%s", showingUser.get().getMail()));
         cookies.setMaxAge(60);
         resp.addCookie(cookies);
-        connTool.addOnline(currentUser);
+        userDao.addOnline(currentUser);
 
         data.put("user", showingUser.get());
         engine.render("like-page.ftl", data, resp);
       }
 
     } catch (SQLException | IOException sqlException) {
-      sqlException.printStackTrace();
+      throw new RuntimeException("Unexpected error happened :(");
     }
-
   }
 
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
-    HashMap<String, Object> data = new HashMap<>();
-    String btn = req.getParameter("button");
-
     try {
-      User currentUser = connTool.getUserFromCookie(req);
+      HashMap<String, Object> data = new HashMap<>();
+      String btn = req.getParameter("button");
 
+      User currentUser = userDao.getUserFromCookie(req);
       Cookie[] cookies = req.getCookies();
       boolean isLiked = Arrays.stream(cookies).anyMatch(c -> c.getName().equals("liked"));
 
@@ -67,13 +64,13 @@ public class UserServlet extends HttpServlet {
                 .orElseThrow(RuntimeException::new)
                 .getValue();
 
-        User likedUser = connTool.getUsers().stream()
+        User likedUser = userDao.getAllUsers().stream()
                 .filter(u -> u.getMail().equals(liked))
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
 
-        if (btn.equals("like")) connTool.addLike(currentUser, likedUser);
-        Optional<User> showingUser = connTool.getUnliked(currentUser);
+        if (btn.equals("like")) userDao.addLike(currentUser, likedUser);
+        Optional<User> showingUser = userDao.getRandomUnlikedUser(currentUser);
 
         if (showingUser.equals(Optional.empty())) resp.sendRedirect("/liked");
         else {
@@ -88,7 +85,7 @@ public class UserServlet extends HttpServlet {
       }
 
     } catch (SQLException | IOException sqlException) {
-      sqlException.printStackTrace();
+      throw new RuntimeException("Unexpected error happened :(");
     }
 
   }

@@ -24,22 +24,23 @@ public class TinderApp {
     TemplateEngine engine = TemplateEngine.folder("content");
 
     //Servlets
-    handler.addServlet(new ServletHolder(new LoginServlet(engine)), "/login/*");
-    handler.addServlet(RegistrationServlet.class, "/registration/*")
+    handler.addServlet(new ServletHolder(new LoginServlet(engine)), "/login");
+    handler.addServlet(new ServletHolder(new MainServlet()), "/*");
+    handler.addServlet(RegistrationServlet.class, "/registration")
             .getRegistration().setMultipartConfig(new MultipartConfigElement("./img"));
-    handler.addServlet(new ServletHolder(new LogoutServlet()), "/logout/*");
-    handler.addServlet(new ServletHolder(new UserServlet(engine)), "/users/*");
-    handler.addServlet(new ServletHolder(new LikedServlet(engine)), "/liked/*");
-    handler.addServlet(new ServletHolder(new MessagesServlet(engine)), "/messages/*");
+    handler.addServlet(new ServletHolder(new LogoutServlet()), "/logout");
+    handler.addServlet(new ServletHolder(new UserServlet(engine)), "/users");
+    handler.addServlet(new ServletHolder(new LikedServlet(engine)), "/liked");
+    handler.addServlet(new ServletHolder(new MessagesServlet(engine)), "/messages");
     handler.addServlet(new ServletHolder(new LinkServlet("css")), "/css/*");
     handler.addServlet(new ServletHolder(new LinkServlet("img")), "/img/*");
 
 
     //Filters
-    handler.addFilter(CookieFilter.class, "/messages/*", EnumSet.of(DispatcherType.REQUEST));
-    handler.addFilter(CookieFilter.class, "/users/*", EnumSet.of(DispatcherType.REQUEST));
-    handler.addFilter(CookieFilter.class, "/liked/*", EnumSet.of(DispatcherType.REQUEST));
-    handler.addFilter(CookieFilter.class, "/logout/*", EnumSet.of(DispatcherType.REQUEST));
+    handler.addFilter(CookieFilter.class, "/messages", EnumSet.of(DispatcherType.REQUEST));
+    handler.addFilter(CookieFilter.class, "/users", EnumSet.of(DispatcherType.REQUEST));
+    handler.addFilter(CookieFilter.class, "/liked", EnumSet.of(DispatcherType.REQUEST));
+    handler.addFilter(CookieFilter.class, "/logout", EnumSet.of(DispatcherType.REQUEST));
 
     server.setHandler(handler);
     server.start();

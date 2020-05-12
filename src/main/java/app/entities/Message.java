@@ -5,12 +5,14 @@ public class Message {
   private int from;
   private int to;
   private String body;
+  private String time;
 
-  public Message(int id, int from, int to, String body) {
+  public Message(int id, int from, int to, String body,String time) {
     this.id = id;
     this.from = from;
     this.to = to;
     this.body = body;
+    this.time = time;
   }
 
   public int getId() {
@@ -27,5 +29,9 @@ public class Message {
 
   public String getBody() {
     return body;
+  }
+
+  public String getTime() {
+    return time;
   }
 }

@@ -27,8 +27,7 @@
         <#assign errortext="Password and confirm password is not same">
         <div class="alert alert-danger">${errortext}</div>
     </#if>
-    <img class="mb-4" src="https://getbootstrap.com/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
-    <h1 class="h3 mb-3 font-weight-normal">Please sign up</h1>
+    <h1 class="h3 mb-3 font-weight-normal">Please fill all inputs</h1>
     <input type="text" name="username" id="inputUsername" class="form-control" placeholder="Username" required
            autofocus>
     <input type="text" name="fullname" id="inputFullname" class="form-control" placeholder="Full name" required
@@ -40,7 +39,9 @@
            autofocus>
     <input type="file" name="profilePic" class="form-control-file my-2">
     <button class="btn btn-lg btn-primary btn-block" type="submit">Sign up</button>
-    <p class="mt-5 mb-3 text-muted">&copy; Tinder by Leman Javadova and <br> Emin Israfilzadeh</p>
+    <label class="col-6">Already user?</label>
+    <a href="/login" class="btn btn-success btn-block">Sign in</a>
+    <p class="mt-2 text-muted">&copy; Tinder by Leman Javadova and <br> Emin Israfilzadeh</p>
 </form>
 </body>
 </html>

@@ -42,6 +42,21 @@ public class ConnectionTool {
     return users;
   }
 
+  public void addUser(String username, String fullname, String mail, String password, String profilePic) throws SQLException {
+    Connection conn = DriverManager.getConnection(URL, USER, PASS);
+    String sqlMessage = "insert into users (username, mail, password, profile_pic, fullname)\n" +
+            "values (?, ?, ?, ?, ?)\n";
+    PreparedStatement stmtMessage = conn.prepareStatement(sqlMessage);
+
+    stmtMessage.setString(1, username);
+    stmtMessage.setString(2, mail);
+    stmtMessage.setString(3, password);
+    stmtMessage.setString(4, profilePic);
+    stmtMessage.setString(5, fullname);
+    stmtMessage.execute();
+
+  }
+
   public List<User> getLikedUsers(User user) throws SQLException {
     Connection conn = DriverManager.getConnection(URL, USER, PASS);
 
@@ -60,32 +75,9 @@ public class ConnectionTool {
     }
     conn.close();
     return likedPeople;
-
   }
 
-  public List<Message> getMessages(User fromWhom, User toWhom) throws SQLException {
-    List<Message> messages = new ArrayList<>();
-
-    Connection conn = DriverManager.getConnection(URL, USER, PASS);
-
-    String sqlMessage = "select * from messages where \"fromUser\" = ? and \"toUser\" = ?";
-    PreparedStatement stmtMessage = conn.prepareStatement(sqlMessage);
-    stmtMessage.setInt(1, fromWhom.getId());
-    stmtMessage.setInt(2, toWhom.getId());
-
-    ResultSet rsetMessage = stmtMessage.executeQuery();
-
-    while (rsetMessage.next()) {
-      int id = rsetMessage.getInt("id");
-      int from = rsetMessage.getInt("fromUser");
-      int to = rsetMessage.getInt("toUser");
-      String body = rsetMessage.getString("body");
-      messages.add(new Message(id, from, to, body));
-    }
-    return messages;
-  }
-
-  public Optional<User> getUnliked(User user) throws SQLException {
+  public Optional<User> getRandomUnlikedUser(User user) throws SQLException {
     List<User> allUsers = new ArrayList<>(getUsers());
     List<User> likedUsers = getLikedUsers(user);
     List<User> liked = new ArrayList<>();
@@ -112,21 +104,6 @@ public class ConnectionTool {
     } else return Optional.empty();
   }
 
-  public User getUserFromCookie(HttpServletRequest request) throws SQLException {
-    Cookie[] cookies = request.getCookies();
-
-    String mail = Arrays.stream(cookies)
-            .filter(l -> l.getName().equals("login"))
-            .map(Cookie::getValue)
-            .findFirst()
-            .orElseThrow(RuntimeException::new);
-
-    return getUsers().stream()
-            .filter(u -> u.getMail().equals(mail))
-            .findFirst()
-            .orElseThrow(RuntimeException::new);
-  }
-
   public void addLike(User fromWhom, User toWhom) throws SQLException {
     Connection conn = DriverManager.getConnection(URL, USER, PASS);
 
@@ -139,17 +116,17 @@ public class ConnectionTool {
     conn.close();
   }
 
-  public void addMessage(User sender, User receiver, String body) throws SQLException {
+  public void deleteLike(User fromWhom, User toWhom) throws SQLException {
     Connection conn = DriverManager.getConnection(URL, USER, PASS);
-    String sqlMessage = "insert into messages (\"fromUser\", \"toUser\", body) values (?,?,?)";
-    PreparedStatement stmtMessage = conn.prepareStatement(sqlMessage);
 
-    stmtMessage.setInt(1, sender.getId());
-    stmtMessage.setInt(2, receiver.getId());
-    stmtMessage.setString(3, body);
-    stmtMessage.execute();
+    String sqlUser = "delete from likes where \"fromUser\"=? and \"toUser\"=?";
+    PreparedStatement stmtUser = conn.prepareStatement(sqlUser);
+    stmtUser.setInt(1, fromWhom.getId());
+    stmtUser.setInt(2, toWhom.getId());
 
+    stmtUser.execute();
     conn.close();
+
   }
 
   public void addLastLogin(User user) throws SQLException {
@@ -181,18 +158,51 @@ public class ConnectionTool {
     conn.close();
   }
 
-  public void addUser(String username, String fullname, String mail, String password, String profilePic) throws SQLException {
+  public List<Message> getMessages(User fromWhom, User toWhom) throws SQLException {
+    List<Message> messages = new ArrayList<>();
+
     Connection conn = DriverManager.getConnection(URL, USER, PASS);
-    String sqlMessage = "insert into users (username, mail, password, profile_pic, fullname)\n" +
-            "values (?, ?, ?, ?, ?)\n";
+
+    String sqlMessage = "select * from messages where \"fromUser\" = ? and \"toUser\" = ?";
+    PreparedStatement stmtMessage = conn.prepareStatement(sqlMessage);
+    stmtMessage.setInt(1, fromWhom.getId());
+    stmtMessage.setInt(2, toWhom.getId());
+
+    ResultSet rsetMessage = stmtMessage.executeQuery();
+
+    while (rsetMessage.next()) {
+      int id = rsetMessage.getInt("id");
+      int from = rsetMessage.getInt("fromUser");
+      int to = rsetMessage.getInt("toUser");
+      String body = rsetMessage.getString("body");
+      String time = rsetMessage.getString("time");
+
+      messages.add(new Message(id, from, to, body, time));
+    }
+    return messages;
+  }
+
+  public void addMessage(User sender, User receiver, String body) throws SQLException {
+    Connection conn = DriverManager.getConnection(URL, USER, PASS);
+    String sqlMessage = "insert into messages (\"fromUser\", \"toUser\", body, \"time\") values (?,?,?,?)";
     PreparedStatement stmtMessage = conn.prepareStatement(sqlMessage);
 
-    stmtMessage.setString(1, username);
-    stmtMessage.setString(2, mail);
-    stmtMessage.setString(3, password);
-    stmtMessage.setString(4, profilePic);
-    stmtMessage.setString(5, fullname);
+    stmtMessage.setInt(1, sender.getId());
+    stmtMessage.setInt(2, receiver.getId());
+
+    String text = body;
+    if (text.matches("^\\s*$")) text = "empty message";
+    stmtMessage.setString(3, text);
+
+    LocalDateTime now = LocalDateTime.now();
+    DateTimeFormatter format = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+    String formatDateTime = now.format(format);
+
+    stmtMessage.setString(4, formatDateTime);
     stmtMessage.execute();
 
+    conn.close();
   }
+
+
 }

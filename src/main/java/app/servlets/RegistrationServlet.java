@@ -1,7 +1,6 @@
 package app.servlets;
 
 import app.dao.UserDao;
-import app.tools.ConnectionTool;
 import app.tools.CookieFilter;
 import app.tools.TemplateEngine;
 
@@ -20,10 +19,9 @@ import java.util.HashMap;
 public class RegistrationServlet extends HttpServlet {
   TemplateEngine engine = TemplateEngine.folder("content");
 
-  public RegistrationServlet() throws IOException {
+  public RegistrationServlet() throws IOException, SQLException {
   }
 
-  ConnectionTool connTool = new ConnectionTool();
   UserDao userDao = new UserDao();
 
   @Override
@@ -44,10 +42,8 @@ public class RegistrationServlet extends HttpServlet {
     String mail = req.getParameter("mail");
     String password = req.getParameter("password");
     String passCon = req.getParameter("passCon");
-    String profilePic = req.getParameter("profilePic");
 
     try {
-      userDao.getAllUsers().addAll(connTool.getUsers());
       if (userDao.checkDuplicate(username, mail)) {
         HashMap<String, Object> data = new HashMap<>();
         data.put("error", "duplicate");
@@ -58,21 +54,17 @@ public class RegistrationServlet extends HttpServlet {
         engine.render("registration.ftl", data, resp);
 
       } else {
-        HashMap<String, Object> data = new HashMap<>();
-        data.put("error", "sucessful");
-        String picName = uploadFile(req, username);
-        connTool.addUser(username, fullname, mail, password, picName);
+        String picName = uploadProfilePic(req, username);
+        userDao.addUser(username, fullname, mail, password, picName);
 
         resp.sendRedirect("/login");
       }
     } catch (SQLException | ServletException sqlException) {
       sqlException.printStackTrace();
     }
-
-
   }
 
-  String uploadFile(HttpServletRequest req, String username) throws IOException, ServletException {
+  String uploadProfilePic(HttpServletRequest req, String username) throws IOException, ServletException {
     LocalDateTime now = LocalDateTime.now();
     DateTimeFormatter format = DateTimeFormatter.ofPattern("ddMMyyyyHHmm");
     String formatDateTime = now.format(format);
@@ -88,4 +80,5 @@ public class RegistrationServlet extends HttpServlet {
 
     return fileNameBuilder.toString();
   }
+
 }
