@@ -3,6 +3,7 @@ package app.servlets;
 import app.dao.UserDao;
 import app.tools.CookieFilter;
 import app.tools.TemplateEngine;
+import lombok.SneakyThrows;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
@@ -35,32 +36,29 @@ public class RegistrationServlet extends HttpServlet {
     else resp.sendRedirect("/users");
   }
 
+  @SneakyThrows
   @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
     String fullname = req.getParameter("fullname");
     String username = req.getParameter("username").replaceAll(" ", "");
     String mail = req.getParameter("mail");
     String password = req.getParameter("password");
     String passCon = req.getParameter("passCon");
 
-    try {
-      if (userDao.checkDuplicate(username, mail)) {
-        HashMap<String, Object> data = new HashMap<>();
-        data.put("error", "duplicate");
-        engine.render("registration.ftl", data, resp);
-      } else if (!password.equals(passCon)) {
-        HashMap<String, Object> data = new HashMap<>();
-        data.put("error", "noMatch");
-        engine.render("registration.ftl", data, resp);
+    if (userDao.checkDuplicate(username, mail)) {
+      HashMap<String, Object> data = new HashMap<>();
+      data.put("error", "duplicate");
+      engine.render("registration.ftl", data, resp);
+    } else if (!password.equals(passCon)) {
+      HashMap<String, Object> data = new HashMap<>();
+      data.put("error", "noMatch");
+      engine.render("registration.ftl", data, resp);
 
-      } else {
-        String picName = uploadProfilePic(req, username);
-        userDao.addUser(username, fullname, mail, password, picName);
+    } else {
+      String picName = uploadProfilePic(req, username);
+      userDao.addUser(username, fullname, mail, password, picName);
 
-        resp.sendRedirect("/login");
-      }
-    } catch (SQLException | ServletException sqlException) {
-      sqlException.printStackTrace();
+      resp.sendRedirect("/login");
     }
   }
 

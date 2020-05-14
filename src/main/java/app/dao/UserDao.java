@@ -63,22 +63,6 @@ public class UserDao {
     connectionTool.addUser(username, fullname, mail, password, profilePic);
   }
 
-  public List<User> getLikedUsers(User user) throws SQLException {
-    return connectionTool.getLikedUsers(user);
-  }
-
-  public void addLike(User from, User to) throws SQLException {
-    connectionTool.addLike(from, to);
-  }
-
-  public void deleteLike(User from, User to) throws SQLException {
-    connectionTool.deleteLike(from, to);
-  }
-
-  public Optional<User> getRandomUnlikedUser(User user) throws SQLException {
-    return connectionTool.getRandomUnlikedUser(user);
-  }
-
   public void addLastLogin(User user) throws SQLException {
     connectionTool.addLastLogin(user);
   }

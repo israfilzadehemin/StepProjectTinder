@@ -6,6 +6,7 @@ import app.entities.Message;
 import app.entities.User;
 import app.tools.ConnectionTool;
 import app.tools.TemplateEngine;
+import lombok.SneakyThrows;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
@@ -25,52 +26,45 @@ public class MessagesServlet extends HttpServlet {
   UserDao userDao = new UserDao();
   MessageDao messageDao = new MessageDao();
 
+  @SneakyThrows
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-    try {
-      Optional<Cookie> message = Arrays.stream(req.getCookies())
-              .filter(m -> m.getName().equals("message"))
-              .findFirst();
+    Optional<Cookie> message = Arrays.stream(req.getCookies())
+            .filter(m -> m.getName().equals("message"))
+            .findFirst();
 
-      if (message.equals(Optional.empty())) resp.sendRedirect("/liked");
-      else {
-        int otherUserId = Integer.parseInt(message.get().getValue());
-        User otherUser = userDao.getById(otherUserId);
-        User currentUser = userDao.getUserFromCookie(req);
+    if (message.equals(Optional.empty())) resp.sendRedirect("/liked");
+    else {
+      int otherUserId = Integer.parseInt(message.get().getValue());
+      User otherUser = userDao.getById(otherUserId);
+      User currentUser = userDao.getUserFromCookie(req);
 
-        handleMessages(currentUser, otherUser, resp);
-      }
-
-    } catch (SQLException sqlException) {
-      throw new RuntimeException("Unexpected error happened :(");
+      handleMessages(currentUser, otherUser, resp);
     }
   }
 
+  @SneakyThrows
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-    try {
-      String text = req.getParameter("text");
+    String text = req.getParameter("text");
 
-      Optional<Cookie> message = Arrays.stream(req.getCookies())
-              .filter(m -> m.getName().equals("message"))
-              .findFirst();
+    Optional<Cookie> message = Arrays.stream(req.getCookies())
+            .filter(m -> m.getName().equals("message"))
+            .findFirst();
 
-      if (message.equals(Optional.empty())) resp.sendRedirect("/liked");
+    if (message.equals(Optional.empty())) resp.sendRedirect("/liked");
+    else {
+      int otherUserId = Integer.parseInt(message.get().getValue());
+      User otherUser = userDao.getById(otherUserId);
+      User currentUser = userDao.getUserFromCookie(req);
+      userDao.addOnline(currentUser);
+
+      String btn = req.getParameter("exit");
+      if (Objects.equals(btn, "exit")) resp.sendRedirect("/liked");
       else {
-        int otherUserId = Integer.parseInt(message.get().getValue());
-        User otherUser = userDao.getById(otherUserId);
-        User currentUser = userDao.getUserFromCookie(req);
-        userDao.addOnline(currentUser);
-
-        String btn = req.getParameter("exit");
-        if (Objects.equals(btn, "exit")) resp.sendRedirect("/liked");
-        else {
-          messageDao.addMessage(currentUser, otherUser, text);
-          handleMessages(currentUser, otherUser, resp);
-        }
+        messageDao.addMessage(currentUser, otherUser, text);
+        handleMessages(currentUser, otherUser, resp);
       }
-    } catch (SQLException sqlException) {
-      throw new RuntimeException("Unexpected error happened :(");
     }
   }
 
