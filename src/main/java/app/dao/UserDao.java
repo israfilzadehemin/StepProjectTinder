@@ -9,7 +9,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 public class UserDao {
 
@@ -44,7 +43,7 @@ public class UserDao {
             .anyMatch(user -> user.getUsername().equals(username) || user.getMail().equals(mail));
   }
 
-  public User getUserFromCookie(HttpServletRequest request) throws SQLException {
+  public User getUserFromCookie(HttpServletRequest request) {
     Cookie[] cookies = request.getCookies();
 
     String mail = Arrays.stream(cookies)
@@ -61,13 +60,11 @@ public class UserDao {
 
   public void addUser(String username, String fullname, String mail, String password, String profilePic) throws SQLException {
     connectionTool.addUser(username, fullname, mail, password, profilePic);
+
   }
 
-  public void addLastLogin(User user) throws SQLException {
-    connectionTool.addLastLogin(user);
+  public void updateLastSeen(User user) throws SQLException {
+    connectionTool.updateLastSeen(user);
   }
 
-  public void addOnline(User user) throws SQLException {
-    connectionTool.addOnline(user);
-  }
 }

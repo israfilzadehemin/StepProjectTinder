@@ -1,5 +1,6 @@
 package app.tools;
 
+import app.entities.Like;
 import app.entities.Message;
 import app.entities.User;
 
@@ -44,8 +45,8 @@ public class ConnectionTool {
 
   public void addUser(String username, String fullname, String mail, String password, String profilePic) throws SQLException {
     Connection conn = DriverManager.getConnection(URL, USER, PASS);
-    String sqlMessage = "insert into users (username, mail, password, profile_pic, fullname)\n" +
-            "values (?, ?, ?, ?, ?)\n";
+    String sqlMessage = "insert into users (username, mail, password, profile_pic, fullname, \"lastLogin\")\n" +
+            "values (?, ?, ?, ?, ?, ?)\n";
     PreparedStatement stmtMessage = conn.prepareStatement(sqlMessage);
 
     stmtMessage.setString(1, username);
@@ -53,70 +54,115 @@ public class ConnectionTool {
     stmtMessage.setString(3, password);
     stmtMessage.setString(4, profilePic);
     stmtMessage.setString(5, fullname);
+    stmtMessage.setString(5, "No login");
     stmtMessage.execute();
 
   }
 
-  public List<User> getLikedUsers(User user) throws SQLException {
-    Connection conn = DriverManager.getConnection(URL, USER, PASS);
-
+  public List<User> getVisitedUsers(User user, String action) throws SQLException {
     List<User> allUsers = new ArrayList<>(getUsers());
-    List<User> likedPeople = new ArrayList<>();
+    List<User> visitedUsers = new ArrayList<>();
 
-    String sqlLike = "select * from likes where \"fromUser\"=?";
+    Connection conn = DriverManager.getConnection(URL, USER, PASS);
+    String sqlLike;
+    PreparedStatement stmtLike;
 
-    PreparedStatement stmtLike = conn.prepareStatement(sqlLike);
-    stmtLike.setInt(1, user.getId());
+
+    if (action.equals("all")) {
+      sqlLike = "select * from likes where \"fromUser\"=?";
+      stmtLike = conn.prepareStatement(sqlLike);
+      stmtLike.setInt(1, user.getId());
+
+    } else {
+      sqlLike = "select * from likes where \"fromUser\"=? and action=?";
+      stmtLike = conn.prepareStatement(sqlLike);
+      stmtLike.setInt(1, user.getId());
+      stmtLike.setString(2, action);
+
+    }
+
     ResultSet rsetLike = stmtLike.executeQuery();
 
     while (rsetLike.next()) {
       int to = rsetLike.getInt("toUser");
-      allUsers.stream().filter(user1 -> user1.getId() == to).forEach(likedPeople::add);
+      allUsers.stream().filter(user1 -> user1.getId() == to).forEach(visitedUsers::add);
     }
     conn.close();
-    return likedPeople;
+    return visitedUsers;
   }
 
-  public Optional<User> getRandomUnlikedUser(User user) throws SQLException {
-    List<User> allUsers = new ArrayList<>(getUsers());
-    List<User> likedUsers = getLikedUsers(user);
-    List<User> liked = new ArrayList<>();
-
-    if (likedUsers.size() > 0) {
-      allUsers.forEach(user1 ->
-              likedUsers.stream().
-                      filter(l -> user1.getId() == l.getId() || user1.getId() == user.getId())
-                      .map(id -> user1)
-                      .forEach(liked::add));
-
-    } else {
-      allUsers.stream()
-              .filter(user1 -> user.getId() == user1.getId())
-              .forEach(liked::add);
-    }
-
-    allUsers.removeAll(liked);
-    List<User> unliked = new ArrayList<>(allUsers);
-
-    if (unliked.size() > 0) {
-      int r = new Random().nextInt(unliked.size());
-      return Optional.of(unliked.get(r));
-    } else return Optional.empty();
-  }
-
-  public void addLike(User fromWhom, User toWhom) throws SQLException {
+  public List<Like> getAllActions() throws SQLException {
+    List<Like> allActions = new ArrayList<>();
     Connection conn = DriverManager.getConnection(URL, USER, PASS);
 
-    String sqlUser = "insert into likes (\"fromUser\", \"toUser\") VALUES (?, ?)";
+    String SQL = "select * from likes";
+    PreparedStatement stmtUser = conn.prepareStatement(SQL);
+
+    ResultSet resultSet = stmtUser.executeQuery();
+
+    while (resultSet.next()) {
+      int id = resultSet.getInt("id");
+      int from = resultSet.getInt("fromUser");
+      int to = resultSet.getInt("toUser");
+      String action = resultSet.getString("action");
+
+      allActions.add(new Like(id, from, to, action));
+    }
+    conn.close();
+
+    return allActions;
+  }
+
+  public Optional<User> getRandomUnvisitedUser(User user) throws SQLException {
+    List<User> allUsers = new ArrayList<>(getUsers());
+    List<User> visitedUsers = new ArrayList<>();
+
+    Connection connection = DriverManager.getConnection(URL, USER, PASS);
+
+    String SQL = "select * from likes where \"fromUser\"=?";
+    PreparedStatement preparedStatement = connection.prepareStatement(SQL);
+    preparedStatement.setInt(1, user.getId());
+    ResultSet resultSet = preparedStatement.executeQuery();
+
+    while (resultSet.next()) {
+      int to = resultSet.getInt("toUser");
+      allUsers.stream().filter(u -> u.getId() == to).forEach(visitedUsers::add);
+    }
+
+    allUsers.remove(allUsers.stream().filter(u -> u.getId() == user.getId()).findFirst().get());
+    allUsers.removeAll(visitedUsers);
+    List<User> unvisitedUsers = new ArrayList<>(allUsers);
+
+    if (unvisitedUsers.size() == 0) return Optional.empty();
+    else {
+      int randomIndex = new Random().nextInt(unvisitedUsers.size());
+      return Optional.of(unvisitedUsers.get(randomIndex));
+    }
+
+  }
+
+  public boolean addAction(User fromWhom, User toWhom, String action) throws SQLException {
+    List<Like> allActions = getAllActions();
+    boolean isDuplicate = allActions.stream()
+            .anyMatch(l -> l.getFromUser() == fromWhom.getId() && l.getToUser() == toWhom.getId());
+
+    if (isDuplicate) return false;
+
+
+    Connection conn = DriverManager.getConnection(URL, USER, PASS);
+
+    String sqlUser = "insert into likes (\"fromUser\", \"toUser\", \"action\" ) VALUES (?, ?, ?)";
     PreparedStatement stmtUser = conn.prepareStatement(sqlUser);
     stmtUser.setInt(1, fromWhom.getId());
     stmtUser.setInt(2, toWhom.getId());
+    stmtUser.setString(3, action);
 
     stmtUser.execute();
     conn.close();
+    return true;
   }
 
-  public void deleteLike(User fromWhom, User toWhom) throws SQLException {
+  public void deleteAction(User fromWhom, User toWhom) throws SQLException {
     Connection conn = DriverManager.getConnection(URL, USER, PASS);
 
     String sqlUser = "delete from likes where \"fromUser\"=? and \"toUser\"=?";
@@ -129,7 +175,7 @@ public class ConnectionTool {
 
   }
 
-  public void addLastLogin(User user) throws SQLException {
+  public void updateLastSeen(User user) throws SQLException {
     Connection conn = DriverManager.getConnection(URL, USER, PASS);
 
     LocalDateTime now = LocalDateTime.now();
@@ -141,18 +187,6 @@ public class ConnectionTool {
     stmtUser.setString(1, formatDateTime);
     stmtUser.setInt(2, user.getId());
 
-    stmtUser.execute();
-
-    conn.close();
-  }
-
-  public void addOnline(User user) throws SQLException {
-    Connection conn = DriverManager.getConnection(URL, USER, PASS);
-
-    String sqlUser = "update users set lastlogin = ? where id=?";
-    PreparedStatement stmtUser = conn.prepareStatement(sqlUser);
-    stmtUser.setString(1, "Online");
-    stmtUser.setInt(2, user.getId());
     stmtUser.execute();
 
     conn.close();
@@ -204,5 +238,22 @@ public class ConnectionTool {
     conn.close();
   }
 
+  public String findAction(User fromWhom, User toWhom) throws SQLException {
+    Connection connection = DriverManager.getConnection(URL, USER, PASS);
 
+    String SQL = "select * from likes where \"fromUser\"=? AND \"toUser\"=?";
+    PreparedStatement preparedStatement = connection.prepareStatement(SQL);
+    preparedStatement.setInt(1, fromWhom.getId());
+    preparedStatement.setInt(2, toWhom.getId());
+
+    ResultSet resultSet = preparedStatement.executeQuery();
+
+    String action="";
+    while (resultSet.next()){
+
+      action = resultSet.getString("action");
+    }
+
+    return action;
+  }
 }

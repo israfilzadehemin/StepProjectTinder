@@ -3,7 +3,6 @@ package app.servlets;
 import app.dao.LikeDao;
 import app.dao.UserDao;
 import app.entities.User;
-import app.tools.ConnectionTool;
 import app.tools.TemplateEngine;
 import lombok.SneakyThrows;
 
@@ -27,27 +26,24 @@ public class UserServlet extends HttpServlet {
   UserDao userDao = new UserDao();
   LikeDao likeDao = new LikeDao();
 
+  @SneakyThrows
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-    try {
       HashMap<String, Object> data = new HashMap<>();
       User currentUser = userDao.getUserFromCookie(req);
-      Optional<User> showingUser = likeDao.getRandomUnlikedUser(currentUser);
+      Optional<User> showingUser = likeDao.getRandomUnvisitedUser(currentUser);
 
       if (showingUser.equals(Optional.empty())) resp.sendRedirect("/liked");
       else {
-        Cookie cookies = new Cookie("liked", String.format("%s", showingUser.get().getMail()));
+        Cookie cookies = new Cookie("clicked", String.format("%s", showingUser.get().getMail()));
         cookies.setMaxAge(60);
         resp.addCookie(cookies);
-        userDao.addOnline(currentUser);
+        userDao.updateLastSeen(currentUser);
 
         data.put("user", showingUser.get());
         engine.render("like-page.ftl", data, resp);
       }
 
-    } catch (SQLException | IOException sqlException) {
-      throw new RuntimeException("Unexpected error happened :(");
-    }
   }
 
   @SneakyThrows
@@ -58,27 +54,28 @@ public class UserServlet extends HttpServlet {
 
     User currentUser = userDao.getUserFromCookie(req);
     Cookie[] cookies = req.getCookies();
-    boolean isLiked = Arrays.stream(cookies).anyMatch(c -> c.getName().equals("liked"));
+    boolean isClicked = Arrays.stream(cookies).anyMatch(c -> c.getName().equals("clicked"));
 
-    if (isLiked) {
-      String liked = Arrays.stream(cookies)
-              .filter(c -> c.getName().equals("liked"))
+    if (isClicked) {
+      String clicked = Arrays.stream(cookies)
+              .filter(c -> c.getName().equals("clicked"))
               .findFirst()
               .orElseThrow(RuntimeException::new)
               .getValue();
 
-      User likedUser = userDao.getAllUsers().stream()
-              .filter(u -> u.getMail().equals(liked))
+      User clickedUser = userDao.getAllUsers().stream()
+              .filter(u -> u.getMail().equals(clicked))
               .findFirst()
               .orElseThrow(RuntimeException::new);
 
-      if (btn.equals("like")) likeDao.addLike(currentUser, likedUser);
-      Optional<User> showingUser = likeDao.getRandomUnlikedUser(currentUser);
+      likeDao.addAction(currentUser, clickedUser, btn);
+
+      Optional<User> showingUser = likeDao.getRandomUnvisitedUser(currentUser);
 
       if (showingUser.equals(Optional.empty())) resp.sendRedirect("/liked");
       else {
         Arrays.stream(cookies).forEach(c -> c.setMaxAge(0));
-        Cookie newCookie = new Cookie("liked", String.format("%s", showingUser.get().getMail()));
+        Cookie newCookie = new Cookie("clicked", String.format("%s", showingUser.get().getMail()));
         newCookie.setMaxAge(60);
         resp.addCookie(newCookie);
 

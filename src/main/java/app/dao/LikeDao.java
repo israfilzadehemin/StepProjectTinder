@@ -14,20 +14,24 @@ public class LikeDao {
   ConnectionTool connectionTool = new ConnectionTool();
   List<Message> likes = new ArrayList<>(); // can be filled with all likes
 
-  public List<User> getLikedUsers(User user) throws SQLException {
-    return connectionTool.getLikedUsers(user);
+  public List<User> getVisitededUsers(User user, String action) throws SQLException {
+    return connectionTool.getVisitedUsers(user, action);
   }
 
-  public void addLike(User from, User to) throws SQLException {
-    connectionTool.addLike(from, to);
+  public void addAction(User from, User to, String action) throws SQLException {
+    connectionTool.addAction(from, to, action);
   }
 
-  public void deleteLike(User from, User to) throws SQLException {
-    connectionTool.deleteLike(from, to);
+  public void deleteAction(User from, User to) throws SQLException {
+    connectionTool.deleteAction(from, to);
   }
 
-  public Optional<User> getRandomUnlikedUser(User user) throws SQLException {
-    return connectionTool.getRandomUnlikedUser(user);
+  public Optional<User> getRandomUnvisitedUser(User user) throws SQLException {
+    return connectionTool.getRandomUnvisitedUser(user);
+  }
+
+  public String findAction(User fromWhom, User toWhom) throws SQLException {
+    return connectionTool.findAction(fromWhom, toWhom);
   }
 
 

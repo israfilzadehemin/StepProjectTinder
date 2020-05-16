@@ -32,7 +32,7 @@ public class RegistrationServlet extends HttpServlet {
 
     CookieFilter cookieFilter = new CookieFilter();
     if (!cookieFilter.isLogged(req, resp))
-      engine.render("registration.ftl", data, resp);
+      engine.render("reg.ftl", data, resp);
     else resp.sendRedirect("/users");
   }
 
@@ -41,23 +41,22 @@ public class RegistrationServlet extends HttpServlet {
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
     String fullname = req.getParameter("fullname");
     String username = req.getParameter("username").replaceAll(" ", "");
-    String mail = req.getParameter("mail");
+    String mail = req.getParameter("email");
     String password = req.getParameter("password");
     String passCon = req.getParameter("passCon");
 
     if (userDao.checkDuplicate(username, mail)) {
       HashMap<String, Object> data = new HashMap<>();
       data.put("error", "duplicate");
-      engine.render("registration.ftl", data, resp);
+      engine.render("reg.ftl", data, resp);
     } else if (!password.equals(passCon)) {
       HashMap<String, Object> data = new HashMap<>();
       data.put("error", "noMatch");
-      engine.render("registration.ftl", data, resp);
+      engine.render("reg.ftl", data, resp);
 
     } else {
       String picName = uploadProfilePic(req, username);
       userDao.addUser(username, fullname, mail, password, picName);
-
       resp.sendRedirect("/login");
     }
   }

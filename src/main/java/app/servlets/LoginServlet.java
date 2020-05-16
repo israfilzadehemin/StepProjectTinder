@@ -38,7 +38,7 @@ public class LoginServlet extends HttpServlet {
 
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-    String mail = req.getParameter("mail");
+    String mail = req.getParameter("email");
     String password = req.getParameter("password");
 
     if (userDao.checkUser(mail, password)) {

@@ -1,37 +1,62 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="utf-8">
+    <!-- Required meta tags-->
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="icon" href="img/favicon.ico">
 
-    <title>Signin Template for Bootstrap</title>
+    <!-- Title Page-->
+    <title>Tinder by Emin Israfilzadeh | Leman Javadova</title>
 
-    <!-- Bootstrap core CSS -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- Icons font CSS-->
+    <link href="vendor/mdi-font/css/material-design-iconic-font.min.css" rel="stylesheet" media="all">
+    <link href="vendor/font-awesome-4.7/css/font-awesome.min.css" rel="stylesheet" media="all">
+    <!-- Font special for pages-->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
 
-    <!-- Custom styles for this template -->
-    <link rel="stylesheet" href="css/style.css">
+    <!-- Vendor CSS-->
+    <link href="vendor/select2/select2.min.css" rel="stylesheet" media="all">
+    <link href="vendor/datepicker/daterangepicker.css" rel="stylesheet" media="all">
+
+    <!-- Main CSS-->
+    <link href="css/main.css" rel="stylesheet" media="all">
 </head>
 
-<body class="text-center">
+<body>
+    <div class="page-wrapper bg-gra-01 p-t-20 font-poppins">
+        <div class="wrapper wrapper--w780">
+            <div class="card card-3">
+                <div class="card-heading"></div>
+                <div class="card-body">
+                    <h2 class="title">Sign in</h2>
+                    <form method="post">
+                        <div class="input-group">
+                            <input required class="input--style-3" type="email" placeholder="Email" name="email">
+                        </div>
+                        <div class="input-group">
+                            <input required class="input--style-3" type="password" placeholder="Password" name="password">
+                        </div>
+                        <div class="p-t-10">
+                            <button class="btn btn--pill btn--green" type="submit">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- Jquery JS-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <!-- Vendor JS-->
+    <script src="vendor/select2/select2.min.js"></script>
+    <script src="vendor/datepicker/moment.min.js"></script>
+    <script src="vendor/datepicker/daterangepicker.js"></script>
 
-<form class="form-signin" method="post">
-    <#if error=='wrongUser'>
-        <div class="alert alert-danger">Please check username and password!</div>
-    </#if>
-    <h1 class="h3 mb-3 font-weight-normal">Welcome :)</h1>
-    <label for="inputEmail" class="sr-only">Email address</label>
-    <input type="email" name="mail" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
-    <label for="inputPassword" class="sr-only">Password</label>
-    <input name="password" type="password" id="inputPassword" class="form-control" placeholder="Password" required>
-    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-    <label class="col-6">OR</label>
-    <a href="/registration" class="btn btn-success btn-block">Sign up</a>
-    <p class="mt-2 mb-2 text-muted">&copy; Tinder by Leman Javadova and <br> Emin Israfilzadeh</p>
-</form>
+    <!-- Main JS-->
+    <script src="js/global.js"></script>
+
 </body>
+
 </html>
+<!-- end document-->

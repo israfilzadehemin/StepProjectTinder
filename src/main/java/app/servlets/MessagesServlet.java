@@ -4,7 +4,6 @@ import app.dao.MessageDao;
 import app.dao.UserDao;
 import app.entities.Message;
 import app.entities.User;
-import app.tools.ConnectionTool;
 import app.tools.TemplateEngine;
 import lombok.SneakyThrows;
 
@@ -28,7 +27,7 @@ public class MessagesServlet extends HttpServlet {
 
   @SneakyThrows
   @Override
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
     Optional<Cookie> message = Arrays.stream(req.getCookies())
             .filter(m -> m.getName().equals("message"))
             .findFirst();
@@ -45,7 +44,7 @@ public class MessagesServlet extends HttpServlet {
 
   @SneakyThrows
   @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp){
     String text = req.getParameter("text");
 
     Optional<Cookie> message = Arrays.stream(req.getCookies())
@@ -57,7 +56,7 @@ public class MessagesServlet extends HttpServlet {
       int otherUserId = Integer.parseInt(message.get().getValue());
       User otherUser = userDao.getById(otherUserId);
       User currentUser = userDao.getUserFromCookie(req);
-      userDao.addOnline(currentUser);
+      userDao.updateLastSeen(currentUser);
 
       String btn = req.getParameter("exit");
       if (Objects.equals(btn, "exit")) resp.sendRedirect("/liked");
@@ -84,7 +83,7 @@ public class MessagesServlet extends HttpServlet {
     data.put("messages", allMessages);
     data.put("current", currentUser);
     data.put("other", otherUser);
-    engine.render("chat.ftl", data, resp);
+    engine.render("chat2.ftl", data, resp);
   }
 
 }
