@@ -27,9 +27,18 @@
     <div class="page-wrapper bg-gra-01 p-t-20 font-poppins">
         <div class="wrapper wrapper--w780">
             <div class="card card-3">
-                <div class="card-heading"></div>
+                <div class="card-heading">
+                    <a href="/login" class="btn link btn-lg">Log in</a>
+                </div>
                 <div class="card-body">
                     <h2 class="title">Registration Info</h2>
+                    <#if error='duplicate'>
+                        <div class="alert alert-danger" style="color: red">Username or mail is already used</div>
+                    <#elseif error='noMatch'>
+                        <div class="alert alert-danger" style="color: red">Password and confirm password is not same</div>
+
+                    </#if>
+
                     <form method="post" enctype="multipart/form-data">
                         <div class="input-group">
                             <input required class="input--style-3" type="text" placeholder="Username" name="username">
@@ -57,6 +66,7 @@
                         <div class="p-t-10">
                             <button class="btn btn--pill btn--green" type="submit">Submit</button>
                         </div>
+
                     </form>
                 </div>
             </div>

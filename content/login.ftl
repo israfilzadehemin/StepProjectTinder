@@ -27,9 +27,15 @@
     <div class="page-wrapper bg-gra-01 p-t-20 font-poppins">
         <div class="wrapper wrapper--w780">
             <div class="card card-3">
-                <div class="card-heading"></div>
+                <div class="card-heading">
+                    <a href="/registration" class="btn link btn-lg">Register</a>
+
+                </div>
                 <div class="card-body">
                     <h2 class="title">Sign in</h2>
+                    <#if error='wrongUser'>
+                        <div class="alert alert-danger" style="color: red">Username or password is not correct</div>
+                    </#if>
                     <form method="post">
                         <div class="input-group">
                             <input required class="input--style-3" type="email" placeholder="Email" name="email">
