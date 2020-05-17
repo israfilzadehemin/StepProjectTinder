@@ -1,6 +1,7 @@
 package app.servlets;
 
 import app.dao.LikeDao;
+import app.dao.MessageDao;
 import app.dao.UserDao;
 import app.entities.User;
 import app.tools.TemplateEngine;
@@ -24,6 +25,7 @@ public class UserServlet extends HttpServlet {
   }
 
   UserDao userDao = new UserDao();
+  MessageDao messageDao = new MessageDao();
   LikeDao likeDao = new LikeDao();
 
   @SneakyThrows
@@ -48,6 +50,7 @@ public class UserServlet extends HttpServlet {
   @SneakyThrows
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+    messageDao.removeMessageAccess(req, resp);
     Optional<User> me = userDao.getUserFromCookie(req, "login");
     showUser(resp, me);
 

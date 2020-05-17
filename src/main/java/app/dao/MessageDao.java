@@ -5,9 +5,14 @@ import app.entities.User;
 import app.tools.ConnectionTool;
 import lombok.SneakyThrows;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public class MessageDao {
 
@@ -21,5 +26,18 @@ public class MessageDao {
   @SneakyThrows
   public void addMessage(User from, User to, String text) {
     connectionTool.addMessage(from, to, text);
+  }
+
+  public void removeMessageAccess(HttpServletRequest request, HttpServletResponse response) {
+    Cookie[] cookies = request.getCookies();
+
+    Optional<Cookie> message = Arrays.stream(cookies)
+            .filter(l -> l.getName().equals("message"))
+            .findFirst();
+
+    if (!message.equals(Optional.empty())) {
+      message.get().setMaxAge(0);
+      response.addCookie(message.get());
+    }
   }
 }
