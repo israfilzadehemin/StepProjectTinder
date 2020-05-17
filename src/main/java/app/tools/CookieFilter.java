@@ -1,6 +1,8 @@
 package app.tools;
 
 
+import lombok.SneakyThrows;
+
 import javax.servlet.*;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
@@ -15,7 +17,7 @@ public class CookieFilter implements Filter {
     return req instanceof HttpServletRequest;
   }
 
-  public boolean isLogged(HttpServletRequest request, HttpServletResponse response) {
+  public boolean isLogged(HttpServletRequest request) {
     Cookie[] cookies = request.getCookies();
     if (cookies == null) return false;
     return (int) Arrays.stream(cookies).filter(c -> c.getName().equals("login")).count() != 0;
@@ -26,9 +28,10 @@ public class CookieFilter implements Filter {
 
   }
 
+  @SneakyThrows
   @Override
-  public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-    if (isHttp(servletRequest) && isLogged((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse)) {
+  public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) {
+    if (isHttp(servletRequest) && isLogged((HttpServletRequest) servletRequest)) {
       filterChain.doFilter(servletRequest, servletResponse);
     } else ((HttpServletResponse) servletResponse).sendRedirect("/login");
 

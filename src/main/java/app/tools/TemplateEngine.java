@@ -3,6 +3,7 @@ package app.tools;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
+import lombok.SneakyThrows;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -15,7 +16,8 @@ public class TemplateEngine {
   private final Configuration config;
 
 
-  public TemplateEngine(String fullPath) throws IOException {
+  @SneakyThrows
+  public TemplateEngine(String fullPath) {
     this.config = new Configuration(Configuration.VERSION_2_3_28) {{
       setDirectoryForTemplateLoading(new File(fullPath));
       setDefaultEncoding(String.valueOf(StandardCharsets.UTF_8));
@@ -25,7 +27,8 @@ public class TemplateEngine {
     }};
   }
 
-  public static TemplateEngine folder(String path) throws IOException {
+  @SneakyThrows
+  public static TemplateEngine folder(String path) {
     return new TemplateEngine(path);
   }
 

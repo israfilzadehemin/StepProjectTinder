@@ -2,6 +2,7 @@ package app.dao;
 
 import app.entities.User;
 import app.tools.ConnectionTool;
+import lombok.SneakyThrows;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -9,6 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public class UserDao {
 
@@ -16,51 +18,47 @@ public class UserDao {
   List<User> users = new ArrayList<>();
 
 
-  public UserDao() throws SQLException {
+  @SneakyThrows
+  public UserDao() {
     users.addAll(connectionTool.getUsers());
   }
 
 
   public List<User> getAllUsers() {
-    return users;
+    return connectionTool.getUsers();
   }
 
-  public User getById(int id) {
+  public Optional<User> getUserById(int id) {
     return users.stream()
             .filter(u -> u.getId() == id)
-            .findFirst()
-            .orElseThrow(RuntimeException::new);
+            .findFirst();
   }
 
   public boolean checkUser(String mail, String password) {
-    return users.stream()
+    return connectionTool.getUsers().stream()
             .anyMatch(u -> u.getMail().equals(mail) && u.getPassword().equals(password));
   }
 
-  public boolean checkDuplicate(String username, String mail) throws SQLException {
-    users.addAll(connectionTool.getUsers());
+  public boolean checkDuplicate(String username, String mail) {
     return users.stream()
             .anyMatch(user -> user.getUsername().equals(username) || user.getMail().equals(mail));
   }
 
-  public User getUserFromCookie(HttpServletRequest request) {
+  public Optional<User> getUserFromCookie(HttpServletRequest request, String cookieName) {
     Cookie[] cookies = request.getCookies();
 
-    String mail = Arrays.stream(cookies)
-            .filter(l -> l.getName().equals("login"))
+    Optional<String> mail = Arrays.stream(cookies)
+            .filter(l -> l.getName().equals(cookieName))
             .map(Cookie::getValue)
-            .findFirst()
-            .orElseThrow(RuntimeException::new);
+            .findFirst();
 
-    return users.stream()
-            .filter(u -> u.getMail().equals(mail))
-            .findFirst()
-            .orElseThrow(RuntimeException::new);
+    return getAllUsers().stream()
+            .filter(u -> u.getMail().equals(mail.get()))
+            .findFirst();
   }
 
-  public void addUser(String username, String fullname, String mail, String password, String profilePic) throws SQLException {
+  public void addUser(String username, String fullname, String mail, String password, String profilePic) {
     connectionTool.addUser(username, fullname, mail, password, profilePic);
-
   }
 
   public void updateLastSeen(User user) throws SQLException {

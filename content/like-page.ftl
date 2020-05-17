@@ -69,8 +69,8 @@
     });
 
     like.addEventListener("click", function () {
-        this.style.visibility = 'hidden'
-        dislike.style.visibility = 'hidden'
+        this.style.display = 'none'
+        dislike.style.display = 'none'
     });
 
 </script>

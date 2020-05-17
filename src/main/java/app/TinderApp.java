@@ -3,6 +3,7 @@ package app;
 import app.servlets.*;
 import app.tools.CookieFilter;
 import app.tools.TemplateEngine;
+import lombok.SneakyThrows;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -12,7 +13,8 @@ import javax.servlet.MultipartConfigElement;
 import java.util.EnumSet;
 
 public class TinderApp {
-  public static void main(String[] args) throws Exception {
+  @SneakyThrows
+  public static void main(String[] args) {
 
     //Configuration
     Server server = new Server(9090);

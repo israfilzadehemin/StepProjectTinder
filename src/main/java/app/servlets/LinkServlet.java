@@ -1,5 +1,6 @@
 package app.servlets;
 
+import lombok.SneakyThrows;
 import org.eclipse.jetty.servlet.Source;
 
 import javax.servlet.Servlet;
@@ -20,8 +21,9 @@ public class LinkServlet extends HttpServlet {
     this.subpath = subpath;
   }
 
+  @SneakyThrows
   @Override
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
     String filename = req.getPathInfo();
     String fileLoc = "content";
     Path path = Paths.get(fileLoc, subpath, filename);

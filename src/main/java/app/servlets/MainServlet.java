@@ -1,6 +1,7 @@
 package app.servlets;
 
 import app.tools.TemplateEngine;
+import lombok.SneakyThrows;
 import org.eclipse.jetty.servlet.Source;
 
 import javax.servlet.Servlet;
@@ -12,8 +13,9 @@ import java.io.IOException;
 
 public class MainServlet extends HttpServlet {
 
+  @SneakyThrows
   @Override
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
     resp.sendRedirect("/login");
   }
 }

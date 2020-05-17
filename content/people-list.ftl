@@ -41,8 +41,8 @@
                             <table class="table-users table table-striped table-dark table-hover" border="0">
                                 <tbody>
                                 <#if liked?size==0>
-                                    <a href="/users" class="btn nav-link my-2 col-12"> You have not liked anyone yet.
-                                        Find out new friends</a>
+                                    <a href="/users" class="btn nav-link my-2 col-12"> You have not added anyone here yet.
+                                        Check users</a>
                                 <#else>
                                     <#list liked as user>
                                         <tr>
@@ -52,16 +52,16 @@
                                                 </div>
 
                                             </td>
-                                            <td class="align-middle">
-                                                <button type="submit" name="msg" class="btn-dark btn"
-                                                        value="${user.id}"> ${user.username} </button>
-                                            </td>
                                             <td class="align-middle font-weight-normal" style="font-size: 19px">
                                                 ${user.fullName}
                                             </td>
                                             <td class="align-middle font-weight-light font-italic">
                                                 <p class="d-inline-block m-0 font-weight-bold">Last seen: </p> <br>
                                                 ${user.lastLogin}
+                                            </td>
+                                            <td class="align-middle">
+                                                <button type="submit" name="msg" class="btn-dark btn"
+                                                        value="${user.mail}" style="padding: 0 15px;"> <i class="fas fa-envelope"></i> </button>
                                             </td>
                                             <td class="align-middle font-weight-normal" style="font-size: 19px">
                                                 <button type="submit" name="delete" value="${user.id}" type="button"

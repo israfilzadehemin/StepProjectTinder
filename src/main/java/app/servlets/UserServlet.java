@@ -19,7 +19,7 @@ import java.util.Optional;
 public class UserServlet extends HttpServlet {
   private final TemplateEngine engine;
 
-  public UserServlet(TemplateEngine engine) throws SQLException {
+  public UserServlet(TemplateEngine engine) {
     this.engine = engine;
   }
 
@@ -27,64 +27,51 @@ public class UserServlet extends HttpServlet {
   LikeDao likeDao = new LikeDao();
 
   @SneakyThrows
+  private void showUser(HttpServletResponse resp, Optional<User> me) {
+    Optional<User> showingUser = likeDao.getRandomUnvisitedUser(me.get());
+
+    if (showingUser.equals(Optional.empty())) resp.sendRedirect("/liked");
+    else {
+
+      Cookie cookie = new Cookie("clicked", String.format("%s", showingUser.get().getMail()));
+      cookie.setMaxAge(60 * 60);
+      resp.addCookie(cookie);
+
+      HashMap<String, Object> data = new HashMap<>();
+      data.put("user", showingUser.get());
+
+      userDao.updateLastSeen(me.get());
+      engine.render("like-page.ftl", data, resp);
+    }
+  }
+
+  @SneakyThrows
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-      HashMap<String, Object> data = new HashMap<>();
-      User currentUser = userDao.getUserFromCookie(req);
-      Optional<User> showingUser = likeDao.getRandomUnvisitedUser(currentUser);
-
-      if (showingUser.equals(Optional.empty())) resp.sendRedirect("/liked");
-      else {
-        Cookie cookies = new Cookie("clicked", String.format("%s", showingUser.get().getMail()));
-        cookies.setMaxAge(60);
-        resp.addCookie(cookies);
-        userDao.updateLastSeen(currentUser);
-
-        data.put("user", showingUser.get());
-        engine.render("like-page.ftl", data, resp);
-      }
+    Optional<User> me = userDao.getUserFromCookie(req, "login");
+    showUser(resp, me);
 
   }
 
   @SneakyThrows
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
-    HashMap<String, Object> data = new HashMap<>();
     String btn = req.getParameter("button");
 
-    User currentUser = userDao.getUserFromCookie(req);
-    Cookie[] cookies = req.getCookies();
-    boolean isClicked = Arrays.stream(cookies).anyMatch(c -> c.getName().equals("clicked"));
+    Optional<Cookie> clicked = Arrays.stream(req.getCookies())
+            .filter(c -> c.getName().equals("clicked"))
+            .findFirst();
 
-    if (isClicked) {
-      String clicked = Arrays.stream(cookies)
-              .filter(c -> c.getName().equals("clicked"))
-              .findFirst()
-              .orElseThrow(RuntimeException::new)
-              .getValue();
+    if (clicked.equals(Optional.empty())) resp.sendRedirect("/users");
+    else {
+      Optional<User> me = userDao.getUserFromCookie(req, "login");
+      Optional<User> clickedUser = userDao.getUserFromCookie(req, "clicked");
 
-      User clickedUser = userDao.getAllUsers().stream()
-              .filter(u -> u.getMail().equals(clicked))
-              .findFirst()
-              .orElseThrow(RuntimeException::new);
-
-      likeDao.addAction(currentUser, clickedUser, btn);
-
-      Optional<User> showingUser = likeDao.getRandomUnvisitedUser(currentUser);
-
-      if (showingUser.equals(Optional.empty())) resp.sendRedirect("/liked");
-      else {
-        Arrays.stream(cookies).forEach(c -> c.setMaxAge(0));
-        Cookie newCookie = new Cookie("clicked", String.format("%s", showingUser.get().getMail()));
-        newCookie.setMaxAge(60);
-        resp.addCookie(newCookie);
-
-        data.put("user", showingUser.get());
-        engine.render("like-page.ftl", data, resp);
-      }
+      likeDao.addAction(me.get(), clickedUser.get(), btn);
+      showUser(resp, me);
     }
-
   }
+
 
 }
 

@@ -15,11 +15,8 @@ public class LogoutServlet extends HttpServlet {
   @SneakyThrows
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-    UserDao userDao = new UserDao();
-    userDao.updateLastSeen(userDao.getUserFromCookie(req));
 
-    Cookie[] cookies = req.getCookies();
-    Arrays.stream(cookies)
+    Arrays.stream(req.getCookies())
             .forEach(c -> {
               c.setMaxAge(0);
               resp.addCookie(c);
