@@ -16,8 +16,16 @@ public class TinderApp {
   @SneakyThrows
   public static void main(String[] args) {
 
+    int port;
+
+    try{
+      port = Integer.parseInt(System.getenv("PORT"));
+    } catch(NumberFormatException e) {
+      port = 5000;
+    }
+
     //Configuration
-    Server server = new Server(9090);
+    Server server = new Server(port);
     ServletContextHandler handler = new ServletContextHandler();
     TemplateEngine engine = TemplateEngine.folder("content");
 
@@ -40,9 +48,7 @@ public class TinderApp {
     handler.addFilter(CookieFilter.class, "/liked", EnumSet.of(DispatcherType.REQUEST));
     handler.addFilter(CookieFilter.class, "/logout", EnumSet.of(DispatcherType.REQUEST));
 
-    server.setHandler(handler);
-    server.start();
-    server.join();
+
 
   }
 }

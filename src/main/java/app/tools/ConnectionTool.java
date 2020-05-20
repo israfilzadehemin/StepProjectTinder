@@ -12,9 +12,9 @@ import java.util.*;
 import java.util.List;
 
 public class ConnectionTool {
-  private final static String URL = "jdbc:postgresql://localhost:5432/Tinder";
-  private final static String USER = "postgres";
-  private final static String PASS = "xiaominote9";
+  private final static String URL = "jdbc:postgresql://ec2-3-91-139-25.compute-1.amazonaws.com:5432/dvpdn27dn1s8v";
+  private final static String USER = "iesyzxdwfoxvza";
+  private final static String PASS = "47a1efa64e1ba2fda57120df97a0252a5b69442162d6c19b23fa637a391260ef";
 
 
   @SneakyThrows
@@ -190,12 +190,12 @@ public class ConnectionTool {
     DateTimeFormatter format = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
     String formattedNow = now.format(format);
 
-    PreparedStatement stmtUser =
+    PreparedStatement ps =
             conn.prepareStatement("update users set last_seen = ? where id=?");
 
-    stmtUser.setString(1, formattedNow);
-    stmtUser.setInt(2, user.getId());
-    stmtUser.execute();
+    ps.setString(1, formattedNow);
+    ps.setInt(2, user.getId());
+    ps.execute();
     conn.close();
   }
 
