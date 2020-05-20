@@ -7,8 +7,6 @@ import lombok.SneakyThrows;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.emin.tinder.servlets.*;
-
 import javax.servlet.DispatcherType;
 import javax.servlet.MultipartConfigElement;
 import java.util.EnumSet;
