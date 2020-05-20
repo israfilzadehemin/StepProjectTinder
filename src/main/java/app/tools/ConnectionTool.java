@@ -58,6 +58,7 @@ public class ConnectionTool {
     stmtMessage.setString(6, "No login");
     stmtMessage.execute();
 
+    conn.close();
   }
 
   @SneakyThrows
@@ -133,6 +134,7 @@ public class ConnectionTool {
               .forEach(visitedUsers::add);
     }
 
+    connection.close();
     allUsers.remove(allUsers.stream().filter(u -> u.getId() == user.getId()).findFirst().get());
     allUsers.removeAll(visitedUsers);
 
@@ -221,6 +223,7 @@ public class ConnectionTool {
 
       messages.add(new Message(id, from, to, body, time));
     }
+    conn.close();
     return messages;
   }
 
