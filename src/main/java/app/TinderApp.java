@@ -48,6 +48,9 @@ public class TinderApp {
     handler.addFilter(CookieFilter.class, "/logout", EnumSet.of(DispatcherType.REQUEST));
 
 
+    server.setHandler(handler);
+    server.start();
+    server.join();
 
   }
 }
