@@ -1,4 +1,4 @@
-package org.emin.tinder.tools;
+package app.tools;
 
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;

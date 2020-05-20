@@ -1,8 +1,8 @@
-package org.emin.tinder;
+package app;
 
 import app.servlets.*;
-import org.emin.tinder.tools.CookieFilter;
-import org.emin.tinder.tools.TemplateEngine;
+import app.tools.CookieFilter;
+import app.tools.TemplateEngine;
 import lombok.SneakyThrows;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;

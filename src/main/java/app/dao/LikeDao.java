@@ -1,7 +1,7 @@
-package org.emin.tinder.dao;
+package app.dao;
 
-import org.emin.tinder.entities.User;
-import org.emin.tinder.tools.ConnectionTool;
+import app.entities.User;
+import app.tools.ConnectionTool;
 import lombok.SneakyThrows;
 
 import java.util.List;

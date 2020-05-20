@@ -1,8 +1,8 @@
-package org.emin.tinder.servlets;
+package app.servlets;
 
-import org.emin.tinder.dao.UserDao;
-import org.emin.tinder.tools.CookieFilter;
-import org.emin.tinder.tools.TemplateEngine;
+import app.tools.CookieFilter;
+import app.dao.UserDao;
+import app.tools.TemplateEngine;
 import lombok.SneakyThrows;
 
 import javax.servlet.http.Cookie;

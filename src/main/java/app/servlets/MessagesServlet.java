@@ -1,10 +1,10 @@
-package org.emin.tinder.servlets;
+package app.servlets;
 
-import org.emin.tinder.dao.MessageDao;
-import org.emin.tinder.dao.UserDao;
-import org.emin.tinder.entities.Message;
-import org.emin.tinder.entities.User;
-import org.emin.tinder.tools.TemplateEngine;
+import app.dao.MessageDao;
+import app.dao.UserDao;
+import app.entities.Message;
+import app.entities.User;
+import app.tools.TemplateEngine;
 import lombok.SneakyThrows;
 
 import javax.servlet.http.Cookie;
