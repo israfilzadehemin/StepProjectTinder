@@ -1,4 +1,4 @@
-package app.entities;
+package org.emin.tinder.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -35,7 +35,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>put.your.main.class.here</mainClass>
+                            <mainClass>org.emin.tinder.TinderApp</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -70,7 +70,7 @@
                     <archive>
                         <manifest>
                             <mainClass>
-                                app.TinderApp
+                                org.emin.tinder.TinderApp
                             </mainClass>
                         </manifest>
                     </archive>

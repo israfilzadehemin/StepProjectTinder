@@ -1,4 +1,4 @@
-package app.tools;
+package org.emin.tinder.tools;
 
 
 import lombok.SneakyThrows;

@@ -1,21 +1,15 @@
-package app.servlets;
+package org.emin.tinder.servlets;
 
-import app.dao.UserDao;
-import app.entities.User;
-import app.tools.ConnectionTool;
-import app.tools.CookieFilter;
-import app.tools.TemplateEngine;
+import org.emin.tinder.dao.UserDao;
+import org.emin.tinder.tools.CookieFilter;
+import org.emin.tinder.tools.TemplateEngine;
 import lombok.SneakyThrows;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.sql.*;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class LoginServlet extends HttpServlet {
   private final TemplateEngine engine;

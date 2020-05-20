@@ -1,12 +1,9 @@
-package app.dao;
+package org.emin.tinder.dao;
 
-import app.entities.Message;
-import app.entities.User;
-import app.tools.ConnectionTool;
+import org.emin.tinder.entities.User;
+import org.emin.tinder.tools.ConnectionTool;
 import lombok.SneakyThrows;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 

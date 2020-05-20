@@ -1,4 +1,4 @@
-package app.servlets;
+package org.emin.tinder.servlets;
 
 import lombok.SneakyThrows;
 import org.eclipse.jetty.servlet.Source;

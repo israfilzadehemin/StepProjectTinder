@@ -1,18 +1,16 @@
-package app.servlets;
+package org.emin.tinder.servlets;
 
-import app.dao.LikeDao;
-import app.dao.MessageDao;
-import app.dao.UserDao;
-import app.entities.User;
-import app.tools.TemplateEngine;
+import org.emin.tinder.dao.LikeDao;
+import org.emin.tinder.dao.MessageDao;
+import org.emin.tinder.dao.UserDao;
+import org.emin.tinder.entities.User;
+import org.emin.tinder.tools.TemplateEngine;
 import lombok.SneakyThrows;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Optional;

@@ -1,18 +1,15 @@
-package app.servlets;
+package org.emin.tinder.servlets;
 
-import app.dao.UserDao;
-import app.tools.CookieFilter;
-import app.tools.TemplateEngine;
+import org.emin.tinder.dao.UserDao;
+import org.emin.tinder.tools.CookieFilter;
+import org.emin.tinder.tools.TemplateEngine;
 import lombok.SneakyThrows;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.*;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;

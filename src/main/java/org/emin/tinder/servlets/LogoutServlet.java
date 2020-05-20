@@ -1,13 +1,10 @@
-package app.servlets;
+package org.emin.tinder.servlets;
 
-import app.dao.UserDao;
 import lombok.SneakyThrows;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.Arrays;
 
 public class LogoutServlet extends HttpServlet {

@@ -1,8 +1,8 @@
-package app.tools;
+package org.emin.tinder.tools;
 
-import app.entities.Like;
-import app.entities.Message;
-import app.entities.User;
+import org.emin.tinder.entities.Like;
+import org.emin.tinder.entities.Message;
+import org.emin.tinder.entities.User;
 import lombok.SneakyThrows;
 
 import java.sql.*;
