@@ -26,18 +26,23 @@ public class LoginServlet extends HttpServlet {
     HashMap<String, Object> data = new HashMap<>();
     data.put("error", "noerror");
 
+    //User is not logged yet
     CookieFilter cookieFilter = new CookieFilter();
     if (!cookieFilter.isLogged(req))
       engine.render("login.ftl", data, resp);
+
+    //User logged
     else resp.sendRedirect("/users");
   }
 
   @SneakyThrows
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
+    //User inputs
     String mail = req.getParameter("email");
     String password = req.getParameter("password");
 
+    //Input value checking
     if (userDao.checkUser(mail, password)) {
       Cookie loginCk = new Cookie("login", String.format("%s", mail));
       loginCk.setMaxAge(60 * 60 * 24);

@@ -13,6 +13,7 @@ public class LogoutServlet extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
 
+    //Clearing all cookies
     Arrays.stream(req.getCookies())
             .forEach(c -> {
               c.setMaxAge(0);

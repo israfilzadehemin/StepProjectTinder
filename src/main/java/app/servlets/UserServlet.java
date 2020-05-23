@@ -28,11 +28,12 @@ public class UserServlet extends HttpServlet {
 
   @SneakyThrows
   private void showUser(HttpServletResponse resp, Optional<User> me) {
+    //Getting random user to make an action
     Optional<User> showingUser = likeDao.getRandomUnvisitedUser(me.get());
 
+    //Checking whether user is found
     if (showingUser.equals(Optional.empty())) resp.sendRedirect("/liked");
     else {
-
       Cookie cookie = new Cookie("clicked", String.format("%s", showingUser.get().getMail()));
       cookie.setMaxAge(60 * 60);
       resp.addCookie(cookie);
@@ -48,7 +49,10 @@ public class UserServlet extends HttpServlet {
   @SneakyThrows
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+    //Denying access to messages after leaving chat menu
     messageDao.removeMessageAccess(req, resp);
+
+    //Showing user to make an action
     Optional<User> me = userDao.getUserFromCookie(req, "login");
     showUser(resp, me);
 
@@ -57,12 +61,14 @@ public class UserServlet extends HttpServlet {
   @SneakyThrows
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
+    //Getting action button value
     String btn = req.getParameter("button");
 
     Optional<Cookie> clicked = Arrays.stream(req.getCookies())
             .filter(c -> c.getName().equals("clicked"))
             .findFirst();
 
+    //Checking whether button is clicked
     if (clicked.equals(Optional.empty())) resp.sendRedirect("/users");
     else {
       Optional<User> me = userDao.getUserFromCookie(req, "login");

@@ -26,8 +26,8 @@ public class MessagesServlet extends HttpServlet {
 
   @SneakyThrows
   void handleMessages(User currentUser, User otherUser, HttpServletResponse resp) {
-    HashMap<String, Object> data = new HashMap<>();
 
+    //Getting messages and sorting them by id
     List<Message> sent = messageDao.getMessages(currentUser, otherUser);
     List<Message> received = messageDao.getMessages(otherUser, currentUser);
     List<Message> allMessages = new ArrayList<>();
@@ -38,6 +38,8 @@ public class MessagesServlet extends HttpServlet {
     Comparator<Message> compareById = Comparator.comparing(Message::getId);
     allMessages.sort(compareById);
 
+    //Sending messages to ftl file
+    HashMap<String, Object> data = new HashMap<>();
     data.put("messages", allMessages);
     data.put("current", currentUser);
     data.put("other", otherUser);
@@ -47,6 +49,7 @@ public class MessagesServlet extends HttpServlet {
   @SneakyThrows
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+    //Checking cooke in order to avoid unwilling access to messages
     Optional<Cookie> message = Arrays.stream(req.getCookies())
             .filter(m -> m.getName().equals("message"))
             .findFirst();
@@ -67,8 +70,10 @@ public class MessagesServlet extends HttpServlet {
   @SneakyThrows
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
+    //Getting value from message input
     String text = req.getParameter("text");
 
+    //Checking cooke in order to avoid unwilling access to messages
     Optional<Cookie> message = Arrays.stream(req.getCookies())
             .filter(m -> m.getName().equals("message"))
             .findFirst();

@@ -47,21 +47,26 @@ public class RegistrationServlet extends HttpServlet {
     HashMap<String, Object> data = new HashMap<>();
     data.put("error", "noerror");
 
+    //User is not logged yet
     CookieFilter cookieFilter = new CookieFilter();
     if (!cookieFilter.isLogged(req))
       engine.render("reg.ftl", data, resp);
+
+    //User logged
     else resp.sendRedirect("/users");
   }
 
   @SneakyThrows
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
+    //User inputs
     String fullname = req.getParameter("fullname");
     String username = req.getParameter("username").replaceAll(" ", "");
     String mail = req.getParameter("email");
     String password = req.getParameter("password");
     String passCon = req.getParameter("passCon");
 
+    //Input value checking
     if (userDao.checkDuplicate(username, mail)) {
       HashMap<String, Object> data = new HashMap<>();
       data.put("error", "duplicate");

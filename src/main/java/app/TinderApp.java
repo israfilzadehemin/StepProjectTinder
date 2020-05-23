@@ -7,6 +7,7 @@ import lombok.SneakyThrows;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+
 import javax.servlet.DispatcherType;
 import javax.servlet.MultipartConfigElement;
 import java.util.EnumSet;
@@ -17,9 +18,9 @@ public class TinderApp {
 
     int port;
 
-    try{
+    try {
       port = Integer.parseInt(System.getenv("PORT"));
-    } catch(NumberFormatException e) {
+    } catch (NumberFormatException e) {
       port = 5000;
     }
 

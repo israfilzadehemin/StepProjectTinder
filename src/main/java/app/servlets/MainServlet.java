@@ -11,6 +11,7 @@ public class MainServlet extends HttpServlet {
   @SneakyThrows
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+    //Redirecting any wrong URL to login page
     resp.sendRedirect("/login");
   }
 }

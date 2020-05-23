@@ -48,6 +48,7 @@ public class LikedServlet extends HttpServlet {
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
     Optional<User> me = userDao.getUserFromCookie(req, "login");
 
+    //Message button clicked
     String messageBtn = req.getParameter("msg");
     if (messageBtn != null) {
       Cookie msgUsername = new Cookie("message", String.format("%s", messageBtn));
@@ -57,6 +58,7 @@ public class LikedServlet extends HttpServlet {
       resp.sendRedirect("/messages");
     }
 
+    //View liked/disliked/all clicked
     String action = req.getParameter("action");
     if (action != null) {
       HashMap<String, Object> data = new HashMap<>();
@@ -67,6 +69,7 @@ public class LikedServlet extends HttpServlet {
       engine.render("people-list.ftl", data, resp);
     }
 
+    //Delete button clicked
     String userId = req.getParameter("delete");
     if (userId != null) {
       User otherUser = userDao.getAllUsers().stream()
