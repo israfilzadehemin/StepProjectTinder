@@ -6,17 +6,19 @@ import app.entities.Message;
 import app.entities.User;
 import app.tools.TemplateEngine;
 import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.*;
 
+@Log4j2
 public class MessagesServlet extends HttpServlet {
   private final TemplateEngine engine;
 
-  @SneakyThrows
   public MessagesServlet(TemplateEngine engine) {
     this.engine = engine;
   }
@@ -24,7 +26,6 @@ public class MessagesServlet extends HttpServlet {
   UserDao userDao = new UserDao();
   MessageDao messageDao = new MessageDao();
 
-  @SneakyThrows
   void handleMessages(User currentUser, User otherUser, HttpServletResponse resp) {
 
     //Getting messages and sorting them by id
@@ -46,28 +47,30 @@ public class MessagesServlet extends HttpServlet {
     engine.render("chat2.ftl", data, resp);
   }
 
-  @SneakyThrows
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-    //Checking cooke in order to avoid unwilling access to messages
+    //Checking cookie in order to avoid unwilling access to messages
     Optional<Cookie> message = Arrays.stream(req.getCookies())
             .filter(m -> m.getName().equals("message"))
             .findFirst();
 
-    if (message.equals(Optional.empty())) resp.sendRedirect("/liked");
-    else {
-      Optional<User> me = userDao.getUserFromCookie(req, "login");
-      Optional<User> otherUser = userDao.getUserFromCookie(req, "message");
-
-      if (otherUser.equals(Optional.empty())) resp.sendRedirect("/liked");
+    try {
+      if (message.equals(Optional.empty())) resp.sendRedirect("/liked");
       else {
-        userDao.updateLastSeen(me.get());
-        handleMessages(me.get(), otherUser.get(), resp);
+        Optional<User> me = userDao.getUserFromCookie(req, "login");
+        Optional<User> otherUser = userDao.getUserFromCookie(req, "message");
+
+        if (otherUser.equals(Optional.empty())) resp.sendRedirect("/liked");
+        else {
+          userDao.updateLastSeen(me.get());
+          handleMessages(me.get(), otherUser.get(), resp);
+        }
       }
+    } catch (IOException e) {
+      log.warn(String.format("Redirecting from messages page to liked page failed: %s", e.getMessage()));
     }
   }
 
-  @SneakyThrows
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
     //Getting value from message input
@@ -78,19 +81,22 @@ public class MessagesServlet extends HttpServlet {
             .filter(m -> m.getName().equals("message"))
             .findFirst();
 
-    if (message.equals(Optional.empty())) resp.sendRedirect("/liked");
-    else {
-      Optional<User> me = userDao.getUserFromCookie(req, "login");
-      Optional<User> otherUser = userDao.getUserFromCookie(req, "message");
-
-      if (otherUser.equals(Optional.empty())) resp.sendRedirect("/liked");
+    try {
+      if (message.equals(Optional.empty())) resp.sendRedirect("/liked");
       else {
-        messageDao.addMessage(me.get(), otherUser.get(), text);
-        userDao.updateLastSeen(me.get());
-        handleMessages(me.get(), otherUser.get(), resp);
+        Optional<User> me = userDao.getUserFromCookie(req, "login");
+        Optional<User> otherUser = userDao.getUserFromCookie(req, "message");
+
+        if (otherUser.equals(Optional.empty())) resp.sendRedirect("/liked");
+        else {
+          messageDao.addMessage(me.get(), otherUser.get(), text);
+          userDao.updateLastSeen(me.get());
+          handleMessages(me.get(), otherUser.get(), resp);
+        }
       }
+    } catch (IOException e) {
+      log.warn(String.format("Redirecting from messages page to liked page failed: %s", e.getMessage()));
     }
   }
-
 
 }

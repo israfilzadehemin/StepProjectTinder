@@ -2,6 +2,7 @@ package app.dao;
 
 import app.entities.User;
 import app.tools.ConnectionTool;
+import app.tools.EncodingTool;
 import lombok.SneakyThrows;
 
 import javax.servlet.http.Cookie;
@@ -15,10 +16,10 @@ import java.util.Optional;
 public class UserDao {
 
   ConnectionTool connectionTool = new ConnectionTool();
+  EncodingTool encodingTool = new EncodingTool();
   List<User> users = new ArrayList<>();
 
 
-  @SneakyThrows
   public UserDao() {
     users.addAll(connectionTool.getUsers());
   }
@@ -53,7 +54,7 @@ public class UserDao {
             .findFirst();
 
     return getAllUsers().stream()
-            .filter(u -> u.getMail().equals(mail.get()))
+            .filter(u -> u.getMail().equals(encodingTool.decrypt(mail.get())))
             .findFirst();
   }
 
@@ -61,7 +62,7 @@ public class UserDao {
     connectionTool.addUser(username, fullname, mail, password, profilePic);
   }
 
-  public void updateLastSeen(User user) throws SQLException {
+  public void updateLastSeen(User user) {
     connectionTool.updateLastSeen(user);
   }
 

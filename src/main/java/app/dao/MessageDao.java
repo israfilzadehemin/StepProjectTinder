@@ -16,12 +16,10 @@ public class MessageDao {
 
   ConnectionTool connectionTool = new ConnectionTool();
 
-  @SneakyThrows
   public List<Message> getMessages(User from, User to) {
     return connectionTool.getMessages(from, to);
   }
 
-  @SneakyThrows
   public void addMessage(User from, User to, String text) {
     connectionTool.addMessage(from, to, text);
   }
