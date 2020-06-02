@@ -2,6 +2,7 @@ package app;
 
 import app.servlets.*;
 import app.tools.CookieFilter;
+import app.tools.MigrationTool;
 import app.tools.TemplateEngine;
 import lombok.SneakyThrows;
 import org.eclipse.jetty.server.Server;
@@ -16,6 +17,13 @@ public class TinderApp {
   @SneakyThrows
   public static void main(String[] args) {
 
+    MigrationTool.prepare(
+            "jdbc:postgresql://localhost:5432/tinder-new",
+            "postgres",
+            "xiaominote9"
+    );
+
+
     int port;
 
     try {
@@ -23,6 +31,7 @@ public class TinderApp {
     } catch (NumberFormatException e) {
       port = 5000;
     }
+
 
     //Configuration
     Server server = new Server(port);
