@@ -77,9 +77,7 @@ public class RegistrationServlet extends HttpServlet {
     String mail = req.getParameter("email");
     String password = req.getParameter("password");
     String passCon = req.getParameter("passCon");
-
-    System.out.println(fullname);
-
+    
     //Input value checking
     if (userDao.checkDuplicate(username, mail)) {
       HashMap<String, Object> data = new HashMap<>();

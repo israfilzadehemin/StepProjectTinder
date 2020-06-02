@@ -18,9 +18,9 @@ public class TinderApp {
   public static void main(String[] args) {
 
     MigrationTool.prepare(
-            "jdbc:postgresql://localhost:5432/tinder-new",
-            "postgres",
-            "xiaominote9"
+            System.getenv("JDBC_URL"),
+            System.getenv("JDBC_USER"),
+            System.getenv("JDBC_PASS")
     );
 
 

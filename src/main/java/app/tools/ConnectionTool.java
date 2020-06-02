@@ -14,9 +14,9 @@ import java.util.List;
 
 @Log4j2
 public class ConnectionTool {
-  private final static String URL = "jdbc:postgresql://ec2-3-91-139-25.compute-1.amazonaws.com:5432/dvpdn27dn1s8v";
-  private final static String USER = "iesyzxdwfoxvza";
-  private final static String PASS = "47a1efa64e1ba2fda57120df97a0252a5b69442162d6c19b23fa637a391260ef";
+  private final static String URL = System.getenv("JDBC_URL");
+  private final static String USER = System.getenv("JDBC_USER");
+  private final static String PASS = System.getenv("JDBC_PASS");
 
 
   public List<User> getUsers() {

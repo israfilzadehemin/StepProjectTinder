@@ -23,7 +23,7 @@ public final class EncodingTool {
     public EncodingTool() {
         this(Base64.getEncoder(), Base64.getDecoder(),
                 "RandomInitVector", // 16 bytes IV
-                System.getenv("encodingkey"));
+                System.getenv("ENCODING_KEY"));
     }
 
     public EncodingTool(final Base64.Encoder enc, final Base64.Decoder dec, final String initVector, final String key) {
